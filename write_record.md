@@ -13,3 +13,11 @@ thread有没有必要自己实现？
 
 atomic的，这个也用c++标准的。
 
+```
+‘gettid’ was not declared in this scope
+```
+这样解决：
+```
+#include <sys/syscall.h>
+#define gettid() syscall(SYS_gettid)
+```

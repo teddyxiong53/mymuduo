@@ -2,6 +2,7 @@
 #include "muduo/base/CurrentThread.h"
 
 #include <sys/prctl.h>
+#include "Exception.h"
 
 namespace muduo
 {
@@ -49,7 +50,18 @@ struct ThreadData {
 
         muduo::CurrentThread::t_threadName = name.empty() ? "muduoThread" : name.c_str();
         prctl(PR_SET_NAME, muduo::CurrentThread::t_threadName);
-
+        try {
+            func();//一般这里是死循环。
+            muduo::CurrentThread::t_threadName = "finished";
+        } catch(const muduo::Exception &ex) {
+            muduo::CurrentThread::t_threadName = "crashed";
+            abort();
+        } catch(const std::exception &ex) {
+            muduo::CurrentThread::t_threadName = "crashed";
+            abort();
+        } catch(...) {
+            throw;//未知异常出现了。
+        }
     }
 };
 
@@ -98,8 +110,21 @@ void Thread::start()
 {
     m_started = true;
     detail::ThreadData *data = new detail::ThreadData(m_func, m_name, &m_tid, &m_latch);
-    pthread_t pth = pthread_create(&m_pthreadId, NULL, &detail::startThread, data);
+    int ret  = pthread_create(&m_pthreadId, NULL, &detail::startThread, data);
+    if(ret) {//创建失败了。
+        m_started = true;
+        delete data;
+    } else {
+        //创建ok
+        m_latch.wait();//创建后，看看获取的tid正常。
 
+    }
+}
+
+int Thread::join()
+{
+    m_joined = true;
+    return pthread_join(m_pthreadId, NULL);
 }
 } // namespace muduo
 

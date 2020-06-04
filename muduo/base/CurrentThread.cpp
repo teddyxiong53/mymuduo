@@ -2,20 +2,12 @@
 #include <cxxabi.h>
 #include <type_traits>
 #include <stdio.h>
+#include <sys/types.h>
+#include <sys/syscall.h>
+#define gettid() syscall(SYS_gettid)
 
 namespace muduo
 {
-
-namespace detail
-{
-pid_t gettid()
-{
-    return gettid();
-}
-
-
-} // namespace detail
-
 
 namespace CurrentThread
 {
@@ -35,7 +27,7 @@ bool isMainThread()
 void cacheTid()
 {
     if(t_cachedTid == 0) {
-        t_cachedTid = detail::gettid();
+        t_cachedTid = gettid();
         t_tidStringLength = snprintf(t_tidString, sizeof(t_tidString), "%5d ", t_cachedTid);
     }
 }

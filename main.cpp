@@ -5,6 +5,7 @@
 #include "muduo/base/CountDownLatch.h"
 #include <thread>
 #include <unistd.h>
+#include "muduo/base/Thread.h"
 
 
 using namespace muduo;
@@ -32,10 +33,24 @@ void test_CountDownLatch()
     thr.join();
     printf("wait return\n");
 }
+
+void threadFunc()
+{
+    sleep(2);
+    printf("thread func\n");
+}
+void test_Thread()
+{
+    Thread *t = new Thread(threadFunc, "test-muduo-thread");
+    t->start();
+    t->join();
+    printf("test thread end\n");
+}
 int main(int argc, char const *argv[])
 {
     printf("muduo test\n");
     //test_Timestamp();
-    test_CountDownLatch();
+    //test_CountDownLatch();
+    test_Thread();
     return 0;
 }
