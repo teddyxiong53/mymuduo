@@ -34,7 +34,9 @@ public:
     static int numCreated() {
         return m_numCreated.load(std::memory_order_relaxed);
     }
+
 private:
+    void setDefaultName();
     bool m_started;
     bool m_joined;
     pthread_t m_pthreadId;
