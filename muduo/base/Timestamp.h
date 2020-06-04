@@ -6,6 +6,10 @@
 #include <utility>
 #include <string>
 #include <time.h>
+namespace muduo
+{
+
+
 
 class Timestamp
 {
@@ -34,7 +38,7 @@ private:
     int64_t m_usValue;//从1970年开始的ms值。30万年之后会溢出。
 };
 
-
+} // namespace muduo
 
 
 #endif

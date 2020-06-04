@@ -1,6 +1,8 @@
 #include "Timestamp.h"
 #include <sys/time.h>
 
+namespace muduo
+{
 std::string Timestamp::toString() const
 {
     char buf[32] = {0};
@@ -35,3 +37,4 @@ Timestamp Timestamp::now()
     return Timestamp(sec*kUsPerSecond + tv.tv_usec);
 }
 
+}//namespace muduo
