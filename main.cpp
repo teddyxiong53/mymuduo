@@ -7,8 +7,15 @@
 #include <unistd.h>
 #include "muduo/base/Thread.h"
 #include "muduo/net/EventLoop.h"
+#include "mylog.h"
+#include <sys/timerfd.h>
+#include "muduo/net/Channel.h"
+#include <string.h>
 
-using namespace muduo;
+
+using muduo::Timestamp;
+using muduo::CountDownLatch;
+using muduo::Thread;
 
 void test_Timestamp()
 {
@@ -46,17 +53,43 @@ void test_Thread()
     t->join();
     printf("test thread end\n");
 }
-void test_EventLoop()
+void test_EventLoopS00()
 {
     muduo::net::EventLoop loop;
     loop.loop();
 }
+muduo::net::EventLoop *g_loop;
+
+void timeout()
+{
+    mylogd("timeout happen");
+    g_loop->quit();
+}
+void test_EventLoopS01()
+{
+    muduo::net::EventLoop loop;
+    g_loop = &loop;
+    int timerfd = timerfd_create(CLOCK_MONOTONIC, TFD_NONBLOCK | TFD_CLOEXEC);
+    muduo::net::Channel channel(&loop, timerfd);
+    channel.setReadCallback(timeout);
+    channel.enableReading();
+
+    struct ::itimerspec howlong;
+    memset(&howlong, 0, sizeof(howlong));
+    howlong.it_value.tv_sec = 3;
+    timerfd_settime(timerfd, 0, &howlong, NULL);
+    loop.loop();
+    close(timerfd);
+
+}
 int main(int argc, char const *argv[])
 {
-    printf("muduo test\n");
+    printf("------------muduo test begin --------------\n");
     //test_Timestamp();
     //test_CountDownLatch();
     //test_Thread();
-    test_EventLoop();
+    //test_EventLoopS00();
+    test_EventLoopS01();
+    printf("------------muduo test end --------------\n");
     return 0;
 }

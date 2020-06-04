@@ -28,3 +28,15 @@ atomic的，这个也用c++标准的。
 
 既然写EventLoop，那么就可以参考muduo书籍的第八章做。
 
+
+
+# S00
+
+这个就一个EventLoop类。
+
+# S01
+
+这个加入Channel类和Poller类。
+
+
+
