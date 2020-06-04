@@ -1,4 +1,4 @@
-#
+
 先实现Timestamp.h。
 把依赖的进行实现。
 这个的依赖相对较少。
@@ -21,3 +21,10 @@ atomic的，这个也用c++标准的。
 #include <sys/syscall.h>
 #define gettid() syscall(SYS_gettid)
 ```
+
+现在线程可以工作。
+
+接下来就是实现EventLoop和定时器的。
+
+既然写EventLoop，那么就可以参考muduo书籍的第八章做。
+

@@ -6,7 +6,7 @@
 #include <thread>
 #include <unistd.h>
 #include "muduo/base/Thread.h"
-
+#include "muduo/net/EventLoop.h"
 
 using namespace muduo;
 
@@ -46,11 +46,17 @@ void test_Thread()
     t->join();
     printf("test thread end\n");
 }
+void test_EventLoop()
+{
+    muduo::net::EventLoop loop;
+    loop.loop();
+}
 int main(int argc, char const *argv[])
 {
     printf("muduo test\n");
     //test_Timestamp();
     //test_CountDownLatch();
-    test_Thread();
+    //test_Thread();
+    test_EventLoop();
     return 0;
 }
