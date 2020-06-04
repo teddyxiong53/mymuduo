@@ -38,5 +38,13 @@ atomic的，这个也用c++标准的。
 
 这个加入Channel类和Poller类。
 
+## S02
+
+这个开始计入TimerQueue到EventLoop里。
+
+TimerQueue就有3个类：Timer、TimerId、TimerQueue。
+
+先实现Timer。
+
 
 

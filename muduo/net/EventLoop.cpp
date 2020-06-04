@@ -5,6 +5,8 @@
 #include <stdlib.h>
 #include "muduo/net/Poller.h"
 #include "muduo/net/Channel.h"
+#include "muduo/net/TimerQueue.h"
+
 
 namespace muduo
 {
@@ -16,7 +18,8 @@ EventLoop::EventLoop()
  : m_looping(false),
    m_threadId(muduo::CurrentThread::tid()),
    m_quit(false),
-   m_poller(new Poller(this))
+   m_poller(new Poller(this)),
+   m_timerQueue(new TimerQueue(this))
 {
     mylogd("EventLoop created in %d", m_threadId);
     if(t_loopInThisThread) {
@@ -61,6 +64,18 @@ void EventLoop::updateChannel(Channel* channel)
 void EventLoop::quit()
 {
     m_quit = true;
+}
+
+
+TimerId EventLoop::runAt(const Timestamp &time, const TimerCallback& cb)
+{
+    return m_timerQueue->addTimer(cb, time, 0.0);
+}
+
+TimerId EventLoop::runAfter(double delay, const TimerCallback &cb)
+{
+    Timestamp time(addTime(Timestamp::now(), delay));
+    return runAt(time,cb);
 }
 
 } // namespace net

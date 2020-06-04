@@ -23,9 +23,15 @@ public:
     std::string toString() const;
     std::string toFormattedString(bool showUs=true) const;
 
+    int64_t usValue() {
+        return m_usValue;
+    }
     static Timestamp now();
     static Timestamp invalid() {
         return Timestamp();
+    }
+    bool valid() {
+        return m_usValue > 0;
     }
     static Timestamp fromUnixTime(time_t t) {
         fromUnixTime(t, 0);
@@ -37,6 +43,30 @@ public:
 private:
     int64_t m_usValue;//从1970年开始的ms值。30万年之后会溢出。
 };
+
+
+
+inline bool operator<(Timestamp lhs, Timestamp rhs)
+{
+    return lhs.usValue() < rhs.usValue();
+}
+inline bool operator==(Timestamp lhs, Timestamp rhs)
+{
+    return lhs.usValue() == rhs.usValue();
+}
+
+inline double timeDifference(Timestamp high, Timestamp low)
+{
+    int64_t diff = high.usValue() - low.usValue();
+    return static_cast<double>(diff)/Timestamp::kUsPerSecond;
+}
+inline Timestamp addTime(
+    Timestamp timestamp, double seconds
+)
+{
+    int64_t delta = static_cast<int64_t>(seconds*Timestamp::kUsPerSecond);
+    return Timestamp(timestamp.usValue() + delta);
+}
 
 } // namespace muduo
 

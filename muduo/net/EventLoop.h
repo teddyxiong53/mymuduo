@@ -6,6 +6,11 @@
 #include "muduo/base/CurrentThread.h"
 #include <vector>
 #include <memory>
+#include "TimerId.h"
+#include "muduo/net/Callbacks.h"
+
+#include "muduo/base/Timestamp.h"
+using muduo::Timestamp;
 
 namespace muduo
 {
@@ -13,6 +18,7 @@ namespace net
 {
 class Channel;
 class Poller;
+class TimerQueue;
 
 class EventLoop : noncopyable
 {
@@ -34,6 +40,8 @@ public:
 
     void updateChannel(Channel* channel);
 
+    TimerId runAfter(double delay, const TimerCallback& cb);
+    TimerId runAt(const Timestamp &time,const TimerCallback &cb);
 private:
     void abortNotInLoopThread();
     bool m_looping;
@@ -41,6 +49,8 @@ private:
     typedef std::vector<Channel*> ChannelList;
     std::unique_ptr<Poller> m_poller;
     ChannelList m_activeChannels;
+    std::unique_ptr<TimerQueue> m_timerQueue;
+
     bool m_quit;
 };
 

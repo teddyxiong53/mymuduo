@@ -82,6 +82,19 @@ void test_EventLoopS01()
     close(timerfd);
 
 }
+void print()
+{
+    static int i = 0;
+    mylogd("i:%d", ++i);
+}
+void test_EventLoopS02()
+{
+    muduo::net::EventLoop loop;
+    g_loop = &loop;
+    loop.runAfter(1, print);
+    loop.runAfter(2, print);
+    loop.loop();
+}
 int main(int argc, char const *argv[])
 {
     printf("------------muduo test begin --------------\n");
@@ -89,7 +102,8 @@ int main(int argc, char const *argv[])
     //test_CountDownLatch();
     //test_Thread();
     //test_EventLoopS00();
-    test_EventLoopS01();
+    //test_EventLoopS01();
+    test_EventLoopS02();
     printf("------------muduo test end --------------\n");
     return 0;
 }
