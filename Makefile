@@ -13,7 +13,7 @@ LDFLAGS = -lpthread
 
 TARGET = test
 
-CXXFLAGS += -std=c++11
+CXXFLAGS += -std=c++11 -I./
 
 $(TARGET): $(obj)
 	$(CXX) -o $@ $^ $(LDFLAGS)
