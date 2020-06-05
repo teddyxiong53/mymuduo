@@ -12,6 +12,9 @@
 #include "muduo/net/Channel.h"
 #include <string.h>
 #include "muduo/net/EventLoopThread.h"
+#include "muduo/net/Acceptor.h"
+#include "muduo/net/InetAddress.h"
+#include "muduo/net/SocketOps.h"
 
 using muduo::Timestamp;
 using muduo::CountDownLatch;
@@ -134,6 +137,23 @@ void test_EventLoopS03_2()
     loop->quit();
 
 }
+
+void newConnection(int sockfd, const muduo::net::InetAddress& addr)
+{
+    mylogd("accept from %s", addr.toIpPort().c_str());
+    ::write(sockfd, "how are you?\n", 13);
+    muduo::net::sockets::close(sockfd);
+}
+void test_EventLoopS04()
+{
+    muduo::net::InetAddress listenAddr(2001);
+    muduo::net::EventLoop loop;
+
+    muduo::net::Acceptor acceptor(&loop, listenAddr);
+    acceptor.setNewConnectionCallback(newConnection);
+    acceptor.listen();
+    loop.loop();
+}
 int main(int argc, char const *argv[])
 {
     printf("------------muduo test begin --------------\n");
@@ -144,7 +164,8 @@ int main(int argc, char const *argv[])
     //test_EventLoopS01();
     //test_EventLoopS02();
     //test_EventLoopS03();
-    test_EventLoopS03_2();
+    //test_EventLoopS03_2();
+    test_EventLoopS04();
     printf("------------muduo test end --------------\n");
     return 0;
 }

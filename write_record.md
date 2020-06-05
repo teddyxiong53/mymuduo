@@ -54,5 +54,19 @@ TimerQueue就有3个类：Timer、TimerId、TimerQueue。
 
 主要改动在EventLoop里。然后用这个机制改造TimerQueue，让它变得线程安全。
 
+# S04
 
+这个就是开始加入tcp相关的内容了。
+
+这里开始变得困难一些了。
+
+这一步，还是只加入了一个Acceptor类。不过配套有SocketOps、Socket、InetAddress这3个文件。
+
+先写SocketOps这个。
+
+这个没有类，都是封装在muduo::net::sockets这个namespace里的一些函数。
+
+
+
+InetAddress 这个会引入StringPiece类。
 
