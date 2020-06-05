@@ -26,6 +26,8 @@ public:
     Timestamp poll(int timeoutMs, ChannelList * activeChannels);
 
     void updateChannel(Channel *channel);
+    void removeChannel(Channel* channel);
+    
     void assertInLoopThread() {
         m_loop->assertInLoopThread();
     }

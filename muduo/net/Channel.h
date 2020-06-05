@@ -15,7 +15,7 @@ class Channel: noncopyable
 public:
     typedef std::function<void()> EventCallback;
     Channel(EventLoop *loop, int fd);
-
+    ~Channel();
     void handleEvent();
     void setReadCallback(const EventCallback& cb) {
         m_readCallback = cb;
@@ -25,6 +25,9 @@ public:
     }
     void setErrorCallback(const EventCallback& cb) {
         m_errorCallback = cb;
+    }
+    void setCloseCallback(const EventCallback& cb) {
+        m_closeCallback = cb;
     }
 
     int fd() {
@@ -43,6 +46,10 @@ public:
         m_events |= kReadEvent;
         update();
     }
+    void disableAll() {
+        m_events = kNoneEvent;
+        update();
+    }
     int index() {
         return m_index;
     }
@@ -52,6 +59,7 @@ public:
     EventLoop *ownerLoop() {
         return m_loop;
     }
+
 private:
     void update();
     static const int kNoneEvent;
@@ -63,10 +71,12 @@ private:
     int m_events;
     int m_revents;
     int m_index;
+    bool m_eventHandling;
 
     EventCallback m_readCallback;
     EventCallback m_writeCallback;
     EventCallback m_errorCallback;
+    EventCallback m_closeCallback;
 };
 
 

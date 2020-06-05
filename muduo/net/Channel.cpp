@@ -2,6 +2,7 @@
 #include "mylog.h"
 #include "EventLoop.h"
 #include <poll.h>
+#include <assert.h>
 
 namespace muduo
 {
@@ -17,13 +18,20 @@ Channel::Channel(EventLoop *loop, int fd)
    m_fd(fd),
    m_events(0),
    m_revents(0),
-   m_index(-1)
+   m_index(-1),
+   m_eventHandling(false)
 {
 
 }
+Channel::~Channel()
+{
+    assert(!m_eventHandling);
+}
+
 
 void Channel::handleEvent()
 {
+    m_eventHandling = true;
     if(m_revents & POLLNVAL) {
         mylogd("POLLNVAL");
     }
@@ -42,6 +50,7 @@ void Channel::handleEvent()
             m_writeCallback();
         }
     }
+    m_eventHandling = false;
 }
 
 void Channel::update()

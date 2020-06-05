@@ -6,6 +6,7 @@
 #include <stdlib.h>
 #include <errno.h>
 #include <stdio.h>
+#include "muduo/net/SocketOps.h"
 
 namespace muduo
 {
@@ -31,6 +32,15 @@ TcpConnection::TcpConnection(
     m_channel->setReadCallback(
         std::bind(&TcpConnection::handleRead, this)
     );
+    m_channel->setWriteCallback(
+        std::bind(&TcpConnection::handleWrite, this)
+    );
+    m_channel->setCloseCallback(
+        std::bind(&TcpConnection::handleClose, this)
+    );
+    m_channel->setErrorCallback(
+        std::bind(&TcpConnection::handleError, this)
+    );
 
 }
 
@@ -47,12 +57,44 @@ void TcpConnection::connectEstablished()
     m_connectionCallback(shared_from_this());
 }
 
+void TcpConnection::connectDestroyed()
+{
+    setState(kDisconnected);
+    m_channel->disableAll();
+    m_connectionCallback(shared_from_this());
+}
+
 void TcpConnection::handleRead()
 {
     char buf[65536];
     ssize_t n = ::read(m_channel->fd(), buf, sizeof(buf));
-    m_messageCallback(shared_from_this(), buf, n);
+    if(n > 0) {
+        m_messageCallback(shared_from_this(), buf, n);
+    } else if(n == 0) {
+        handleClose();
+    } else {
+        handleError();
+    }
+
 }
+
+void TcpConnection::handleWrite()
+{
+
+}
+
+void TcpConnection::handleClose()
+{
+    m_channel->disableAll();
+    m_closeCallback(shared_from_this());
+}
+
+void TcpConnection::handleError()
+{
+    int err = sockets::getSocketError(m_channel->fd());
+    myloge("socket error:%d", err);
+}
+
 
 } // namespace net
 

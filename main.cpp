@@ -182,6 +182,10 @@ void test_EventLoopS05()
     server.start();
     loop.loop();
 }
+void test_EventLoopS06()
+{
+    test_EventLoopS05();
+}
 int main(int argc, char const *argv[])
 {
     printf("------------muduo test begin --------------\n");
@@ -194,7 +198,8 @@ int main(int argc, char const *argv[])
     //test_EventLoopS03();
     //test_EventLoopS03_2();
     // test_EventLoopS04();
-    test_EventLoopS05();
+    //test_EventLoopS05();
+    test_EventLoopS06();
     printf("------------muduo test end --------------\n");
     return 0;
 }

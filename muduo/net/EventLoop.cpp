@@ -81,6 +81,11 @@ void EventLoop::updateChannel(Channel* channel)
     m_poller->updateChannel(channel);
 }
 
+void EventLoop::removeChannel(Channel* channel)
+{
+    m_poller->removeChannel(channel);
+}
+
 void EventLoop::quit()
 {
     m_quit = true;

@@ -36,6 +36,8 @@ public:
 
 private:
     void newConnection(int sockfd, const InetAddress& peerAddr);
+    void removeConnection(const TcpConnectionPtr& conn);
+    
     typedef std::map<std::string, TcpConnectionPtr> ConnectionMap;
     EventLoop *m_loop;
     const std::string m_name;

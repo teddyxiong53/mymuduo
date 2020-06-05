@@ -25,6 +25,7 @@ typedef std::function<void (const TcpConnectionPtr&,
         ssize_t len
     )> MessageCallback;
 
+typedef std::function<void (const TcpConnectionPtr& )> CloseCallback;
 
 } // namespace net
 

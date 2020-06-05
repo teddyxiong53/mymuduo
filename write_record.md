@@ -74,3 +74,27 @@ InetAddress 这个会引入StringPiece类。
 
 这一步开始加入TCPServer和TcpConnection这2个类。
 
+# S06
+
+这一步没有新增类。是对前面的类进行改动，用来支持连接断开。
+
+Callbacks.h里增加一个CloseCallback函数类型。
+
+Channel.h里增加析构函数，setCloseCallback，disableAll函数。
+
+EventLoop.h里增加removeChannel函数。它只是转而调用Poller里的removeChannel函数。
+
+Poller.h里增加removeChannel函数。
+
+TcpConnection增加：setCloseCallback、connectDestroyed、handleClose、handleWrite、handleError、
+
+增加了kDisconnected枚举。
+
+TCPServer里增加：removeConnection。
+
+这个没有新增测试用例。直接用上一个的测试用例就可以。然后客户端练上来，主动断开连接，可以看到相关的打印。
+
+
+
+
+

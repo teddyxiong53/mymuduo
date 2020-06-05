@@ -72,8 +72,27 @@ void Poller::updateChannel(Channel* channel)
         pfd.events = static_cast<short>(channel->events());
         pfd.revents = 0;
         if(channel->isNoneEvent()) {
-            pfd.fd = -1;
+            pfd.fd = -channel->fd() -1;
         }
+    }
+}
+
+void Poller::removeChannel(Channel* channel)
+{
+    mylogd("remove fd:%d", channel->fd());
+    int idx = channel->index();
+    //const struct pollfd& pfd = m_pollfds[idx]
+    size_t n = m_channels.erase(channel->fd());
+    if(idx == m_pollfds.size() - 1) {
+        m_pollfds.pop_back();//刚好是移除最后一个。
+    } else {
+        int channelAtEnd = m_pollfds.back().fd;
+        std::iter_swap(m_pollfds.begin()+idx, m_pollfds.end()-1);
+        if(channelAtEnd < 0) {
+            channelAtEnd = -channelAtEnd - 1;
+        }
+        m_channels[channelAtEnd]->set_index(idx);
+        m_pollfds.pop_back();
     }
 }
 } // namespace net

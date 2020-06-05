@@ -63,7 +63,20 @@ void TcpServer::newConnection(
     m_connections[connName] = conn;
     conn->setConnectionCallback(m_connectionCallback);
     conn->setMessageCallback(m_messageCallback);
+    conn->setCloseCallback(
+        std::bind(&TcpServer::removeConnection, this, _1)
+    );
+
     conn->connectEstablished();
+}
+
+void TcpServer::removeConnection(const TcpConnectionPtr& conn)
+{
+    mylogd("remove connection");
+    size_t n = m_connections.erase(conn->name());
+    m_loop->queueInLoop(
+        std::bind(&TcpConnection::connectDestroyed, conn)
+    );
 }
 } // namespace net
 
