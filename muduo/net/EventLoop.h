@@ -8,6 +8,7 @@
 #include <memory>
 #include "TimerId.h"
 #include "muduo/net/Callbacks.h"
+#include <mutex>
 
 #include "muduo/base/Timestamp.h"
 using muduo::Timestamp;
@@ -23,6 +24,7 @@ class TimerQueue;
 class EventLoop : noncopyable
 {
 public:
+    typedef std::function<void()> Functor;
     EventLoop();
     ~EventLoop();
 
@@ -42,8 +44,24 @@ public:
 
     TimerId runAfter(double delay, const TimerCallback& cb);
     TimerId runAt(const Timestamp &time,const TimerCallback &cb);
+    TimerId runEvery(double interval, const TimerCallback& cb);
+
+    void runInLoop(const Functor& cb);
+    void queueInLoop(const Functor& cb);
+
+    void wakeup();
+
 private:
     void abortNotInLoopThread();
+    void handleRead();
+    void doPendingFunctors();
+
+    bool m_callingPendingFunctors;
+
+    int m_wakeupFd;
+    std::unique_ptr<Channel> m_wakeupChannel;
+    std::vector<Functor> m_pendingFunctors;
+    std::mutex m_mutex;//保护m_pendingFunctors
     bool m_looping;
     const pid_t m_threadId;
     typedef std::vector<Channel*> ChannelList;

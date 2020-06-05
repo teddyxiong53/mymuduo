@@ -11,7 +11,7 @@
 #include <sys/timerfd.h>
 #include "muduo/net/Channel.h"
 #include <string.h>
-
+#include "muduo/net/EventLoopThread.h"
 
 using muduo::Timestamp;
 using muduo::CountDownLatch;
@@ -95,6 +95,45 @@ void test_EventLoopS02()
     loop.runAfter(2, print);
     loop.loop();
 }
+
+void run3()
+{
+    mylogd("");
+    g_loop->quit();
+}
+void run2()
+{
+    mylogd("");
+    g_loop->queueInLoop(run3);
+}
+void run1()
+{
+    mylogd("");
+    g_loop->runInLoop(run2);
+}
+void test_EventLoopS03()
+{
+    muduo::net::EventLoop loop;
+    g_loop = &loop;
+    loop.runAfter(2, run1);
+    loop.loop();
+}
+void runInThread()
+{
+    mylogd("pid:%d, tid:%d", getpid(), muduo::CurrentThread::tid());
+}
+void test_EventLoopS03_2()
+{
+    mylogd("pid:%d, tid:%d", getpid(), muduo::CurrentThread::tid());
+    muduo::net::EventLoopThread loopThread;
+    muduo::net::EventLoop *loop = loopThread.startLoop();
+    loop->runInLoop(runInThread);
+    sleep(1);
+    loop->runAfter(2, runInThread);
+    sleep(3);
+    loop->quit();
+
+}
 int main(int argc, char const *argv[])
 {
     printf("------------muduo test begin --------------\n");
@@ -103,7 +142,9 @@ int main(int argc, char const *argv[])
     //test_Thread();
     //test_EventLoopS00();
     //test_EventLoopS01();
-    test_EventLoopS02();
+    //test_EventLoopS02();
+    //test_EventLoopS03();
+    test_EventLoopS03_2();
     printf("------------muduo test end --------------\n");
     return 0;
 }

@@ -31,6 +31,7 @@ private:
     typedef std::pair<Timestamp, Timer*> Entry;
     typedef std::set<Entry> TimerList;
     void handleRead();
+    void addTimerInLoop(Timer* timer);
     bool insert(Timer *timer);
     std::vector<Entry> getExpired(Timestamp now);
     void reset(const std::vector<Entry>& expired, Timestamp now);

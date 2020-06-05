@@ -91,12 +91,19 @@ TimerId TimerQueue::addTimer(const TimerCallback& cb,
 )
 {
     Timer *timer = new Timer(cb, when, interval);
+    m_loop->runInLoop(
+        std::bind(&TimerQueue::addTimerInLoop, this, timer)
+    );
+    return TimerId(timer);
+
+}
+void TimerQueue::addTimerInLoop(Timer *timer)
+{
     m_loop->assertInLoopThread();
     bool earliestChanged = insert(timer);
     if(earliestChanged) {
         muduo::detail::resetTimerfd(m_timerfd, timer->expiration());
     }
-    return TimerId(timer);
 }
 
 bool TimerQueue::insert(Timer* timer)

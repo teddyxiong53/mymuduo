@@ -38,13 +38,21 @@ atomic的，这个也用c++标准的。
 
 这个加入Channel类和Poller类。
 
-## S02
+# S02
 
-这个开始计入TimerQueue到EventLoop里。
+这个开始计入TimerQueue到EventLoop里。依赖timerfd。
 
 TimerQueue就有3个类：Timer、TimerId、TimerQueue。
 
 先实现Timer。
+
+# S03
+
+这个的主要是加入eventfd来支持在io线程里执行回调。
+
+然后加入EventLoopThread。
+
+主要改动在EventLoop里。然后用这个机制改造TimerQueue，让它变得线程安全。
 
 
 
