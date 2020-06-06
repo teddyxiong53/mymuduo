@@ -18,6 +18,7 @@
 #include "muduo/net/TcpServer.h"
 #include "muduo/net/TcpConnection.h"
 #include "muduo/net/Buffer.h"
+#include "muduo/net/Connector.h"
 
 using muduo::Timestamp;
 using muduo::CountDownLatch;
@@ -297,6 +298,22 @@ void test_EventLoopS10()
     server.start();
     loop.loop();
 }
+
+void connectCallbackS11(int sockfd)
+{
+    mylogd("connect ok");
+    g_loop->quit();
+}
+void test_EventLoopS11()
+{
+    muduo::net::EventLoop loop;
+    g_loop = &loop;
+    muduo::net::InetAddress addr("127.0.0.1", 2001);
+    muduo::net::ConnectorPtr connector(new muduo::net::Connector(&loop, addr));
+    connector->setNewConnectionCallback(connectCallbackS11);
+    connector->start();
+    loop.loop();
+}
 int main(int argc, char const *argv[])
 {
     printf("------------muduo test begin --------------\n");
@@ -315,7 +332,8 @@ int main(int argc, char const *argv[])
     //test_EventLoopS07();
     //test_EventLoopS08();
     //test_EventLoopS09();
-    test_EventLoopS10();
+    //test_EventLoopS10();
+    test_EventLoopS11();
     printf("------------muduo test end --------------\n");
     return 0;
 }

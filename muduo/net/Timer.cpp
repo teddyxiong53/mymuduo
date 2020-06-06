@@ -5,6 +5,8 @@ namespace muduo
 {
 namespace net
 {
+std::atomic<int64_t> Timer::s_numCreated;
+
 void Timer::restart(Timestamp now)
 {
     if(m_repeat) {

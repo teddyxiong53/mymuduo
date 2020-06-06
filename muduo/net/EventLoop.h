@@ -47,6 +47,8 @@ public:
     TimerId runAt(const Timestamp &time,const TimerCallback &cb);
     TimerId runEvery(double interval, const TimerCallback& cb);
 
+    void cancel(TimerId timerId);
+    
     void runInLoop(const Functor& cb);
     void queueInLoop(const Functor& cb);
 

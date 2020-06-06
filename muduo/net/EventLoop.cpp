@@ -178,6 +178,12 @@ void EventLoop::handleRead()
     }
 }
 
+
+
+void EventLoop::cancel(TimerId timerId)
+{
+    m_timerQueue->cancel(timerId);
+}
 } // namespace net
 
 } // namespace muduo

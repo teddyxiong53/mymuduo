@@ -172,3 +172,15 @@ TcpServer.h：增加setWriteCompleteCallback。
 
 除了增加将EventLoopThreadPool，只修改TcpServer。
 
+# S11
+
+这一步主要是加入Connector类。
+
+这个对基础类提出了cancel定时器的需求。所以修改类都要加上cancel。
+
+TimerId：加入了一个sequence序号。
+
+Timer.h：加入sequence。和s_numCreated这个表示static变量。
+
+TimerQueue：增加cancel。这才增加了ActiveTimerSet。
+
