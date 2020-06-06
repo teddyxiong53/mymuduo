@@ -7,6 +7,7 @@
 #include "muduo/net/Channel.h"
 #include "muduo/net/TimerQueue.h"
 #include <sys/eventfd.h>
+#include <signal.h>
 
 namespace muduo
 {
@@ -15,6 +16,15 @@ namespace net
 const int kPollTimeMs = 10*1000;
 __thread EventLoop * t_loopInThisThread = 0;
 
+class IgnoreSigPipe
+{
+public:
+    IgnoreSigPipe()
+    {
+        ::signal(SIGPIPE, SIG_IGN);
+    }
+};
+IgnoreSigPipe initObj;
 
 static int  createEventfd()
 {

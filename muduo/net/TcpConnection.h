@@ -49,7 +49,11 @@ public:
     {
         m_closeCallback = cb;
     }
-
+    void setTcpNoDelay(bool on);
+    void setWriteCompleteCallback(const WriteCompleteCallback cb)
+    {
+        m_writeCompleteCallback = cb;
+    }
     void connectEstablished();
     void connectDestroyed();
 
@@ -83,6 +87,7 @@ private:
     ConnectionCallback m_connectionCallback;
     MessageCallback m_messageCallback;
     CloseCallback m_closeCallback;
+    WriteCompleteCallback m_writeCompleteCallback;
     muduo::net::Buffer m_inputBuffer;
     muduo::net::Buffer m_outputBuffer;
 };

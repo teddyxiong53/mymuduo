@@ -24,7 +24,7 @@ public:
     int accept(InetAddress* peerAddr);
     void setReuseAddr(bool on);
     void shutdownWrite();
-    
+    void setTcpNoDelay(bool on);
 private:
     int m_sockfd;
 };

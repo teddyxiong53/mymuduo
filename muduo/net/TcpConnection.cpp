@@ -96,6 +96,11 @@ void TcpConnection::handleWrite()
                 //说明buffer里的数据都发送完成了。
                 //停止关注可写事件。
                 m_channel->disableWriting();
+                if(m_writeCompleteCallback) {
+                    m_loop->queueInLoop(
+                        std::bind(m_writeCompleteCallback, shared_from_this())
+                    );
+                }
                 if(m_state == kDisconnecting) {
                     shutdownInLoop();
                 }
@@ -149,6 +154,11 @@ void TcpConnection::sendInLoop(const std::string& message)
             if((size_t)nwrote < message.size()) {
                 //说明没有写完。
                 mylogd("going to write more data");
+            } else if(m_writeCompleteCallback) {
+                //说明写完了
+                m_loop->queueInLoop(
+                    std::bind(m_writeCompleteCallback, shared_from_this())
+                );
             }
         } else {
             //小于0
@@ -183,6 +193,11 @@ void TcpConnection::shutdownInLoop()
     if(!m_channel->isWriting()) {
         m_socket->shutdownWrite();
     }
+}
+
+void TcpConnection::setTcpNoDelay(bool on)
+{
+    m_socket->setTcpNoDelay(on);
 }
 
 } // namespace net

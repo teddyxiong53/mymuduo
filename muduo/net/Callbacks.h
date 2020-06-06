@@ -29,6 +29,8 @@ typedef std::function<void (const TcpConnectionPtr&,
 
 typedef std::function<void (const TcpConnectionPtr& )> CloseCallback;
 
+typedef std::function<void (const TcpConnectionPtr& conn)> WriteCompleteCallback;
+
 } // namespace net
 
 } // namespace muduo

@@ -48,6 +48,13 @@ void Socket::shutdownWrite()
     sockets::shutdownWrite(m_sockfd);
 }
 
+
+void Socket::setTcpNoDelay(bool on)
+{
+    int optval = on? 1: 0;
+    ::setsockopt(m_sockfd, IPPROTO_TCP, TCP_NODELAY, &optval, sizeof(optval));
+}
+
 } // namespace net
 
 } // namespace muduo

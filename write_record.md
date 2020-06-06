@@ -150,7 +150,17 @@ TcpCopnnection：
 
 现在实现了发送，就可以开始做echo了。
 
+# S09
 
+这一步主要是完善。实现写完成事件和HighWaterMark。
 
+Callbacks.h：增加WriteCompleteCallback回调类型。
 
+EventLoop.cpp：靠全局静态类的方式来设置SIGPIPE。
+
+Socket.h：增加setTcpNoDelay。
+
+TcpConnection.h：增加setTcpNoDelay、setWriteCompleteCallback、
+
+TcpServer.h：增加setWriteCompleteCallback。
 

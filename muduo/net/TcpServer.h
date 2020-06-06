@@ -33,17 +33,22 @@ public:
     {
         m_messageCallback = cb;
     }
-
+    void setWriteCompleteCallback(const WriteCompleteCallback& cb)
+    {
+        m_writeCompleteCallback = cb;
+    }
+    
 private:
     void newConnection(int sockfd, const InetAddress& peerAddr);
     void removeConnection(const TcpConnectionPtr& conn);
-    
+
     typedef std::map<std::string, TcpConnectionPtr> ConnectionMap;
     EventLoop *m_loop;
     const std::string m_name;
     std::unique_ptr<Acceptor> m_acceptor;
     ConnectionCallback m_connectionCallback;
     MessageCallback m_messageCallback;
+    WriteCompleteCallback m_writeCompleteCallback;
     bool m_started;
     int m_nextConnId;
     ConnectionMap m_connections;
