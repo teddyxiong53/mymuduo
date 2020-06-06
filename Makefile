@@ -54,7 +54,7 @@ chat: libmuduo.a chat_server chat_client
 chat_server:$(CHAT_SERVER_OBJ)
 	g++ -o $@ $^ $(LDFLAGS)
 
-chat_client:$(CHAT_SERVER_OBJ)
+chat_client:$(CHAT_CLIENT_OBJ)
 	g++ -o $@ $^ $(LDFLAGS)
 
 -include $(ALL_DEP)
