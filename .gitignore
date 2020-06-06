@@ -2,4 +2,7 @@
 *.o
 *.d
 test
+*.a
+chat_server
+chat_client
 

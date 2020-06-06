@@ -21,7 +21,7 @@ public:
     ThreadNameInitializer() {
         muduo::CurrentThread::t_threadName = "main";
         CurrentThread::tid();
-        pthread_atfork(NULL, NULL, &afterFork);
+        //pthread_atfork(NULL, NULL, &afterFork);
     }
 };
 

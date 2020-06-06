@@ -192,3 +192,28 @@ TimerQueue：增加cancel。这才增加了ActiveTimerSet。
 
 测试程序连接上来。服务端主动给客户端发消息，客户端 把消息原样返回。
 
+
+
+到这里，就基本完成了。
+
+接下来，写几个例子。看看各个组件是否工作正常。
+
+实现这些例子。
+
+```
+chat
+hub
+```
+
+
+
+# chat
+
+3个文件：
+
+codec.h
+
+client.cpp
+
+server.cpp
+

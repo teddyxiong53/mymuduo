@@ -1,0 +1,7 @@
+use make {target} to compile
+target:
+    chat: chat example
+    test: test
+    hub: hub example
+    lib: generate libmuduo.a
+
