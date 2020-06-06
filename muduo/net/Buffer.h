@@ -6,7 +6,7 @@
 #include <algorithm>
 #include <string>
 #include <assert.h>
-#include "mylog.h"
+//#include "mylog.h"
 
 
 namespace muduo
@@ -33,7 +33,7 @@ public:
         std::swap(m_writeIndex, rhs.m_writeIndex);
     }
     size_t readableBytes() const {
-        mylogd("w:%d, r:%d", m_writeIndex, m_readIndex);
+        //mylogd("w:%d, r:%d", m_writeIndex, m_readIndex);
         return m_writeIndex - m_readIndex;
     }
     size_t writableBytes() const {

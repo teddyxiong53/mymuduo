@@ -43,6 +43,11 @@ void Socket::setReuseAddr(bool on)
     }
 }
 
+void Socket::shutdownWrite()
+{
+    sockets::shutdownWrite(m_sockfd);
+}
+
 } // namespace net
 
 } // namespace muduo

@@ -23,7 +23,8 @@ public:
     void listen();
     int accept(InetAddress* peerAddr);
     void setReuseAddr(bool on);
-
+    void shutdownWrite();
+    
 private:
     int m_sockfd;
 };

@@ -221,6 +221,9 @@ void test_EventLoopS07()
     server.start();
     loop.loop();
 }
+
+
+
 using muduo::net::Buffer;
 void test_Buffer()
 {
@@ -232,6 +235,28 @@ void test_Buffer()
     mylogd("after append 200 x");
     mylogd("buf.readableBytes():%d", buf.readableBytes());
     mylogd("buf.writableBytes():%d", buf.writableBytes());
+}
+
+/*
+    收到什么回复什么。
+*/
+void onMessageS08(const muduo::net::TcpConnectionPtr& conn, muduo::net::Buffer* buf, muduo::Timestamp receiveTime)
+{
+    mylogd("receive from connection:%s", conn->peerAddress().toIpPort().c_str());
+    std::string content = buf->retrieveAsString();
+    mylogd("content:%s", content.c_str());
+    conn->send(content);
+}
+void test_EventLoopS08()
+{
+    muduo::net::EventLoop loop;
+    muduo::net::InetAddress listenAddr(2001);
+
+    muduo::net::TcpServer server(&loop, listenAddr);
+    server.setConnectionCallback(onConnectionS07);
+    server.setMessageCallback(onMessageS08);
+    server.start();
+    loop.loop();
 }
 
 int main(int argc, char const *argv[])
@@ -249,7 +274,8 @@ int main(int argc, char const *argv[])
     //test_EventLoopS05();
     //test_EventLoopS06();
     //test_Buffer();
-    test_EventLoopS07();
+    //test_EventLoopS07();
+    test_EventLoopS08();
     printf("------------muduo test end --------------\n");
     return 0;
 }

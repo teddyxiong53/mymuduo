@@ -118,6 +118,38 @@ typedef boost::function<void (const TcpConnectionPtr&,
 
 写完后，调试出现了死机问题。
 
+是因为我打印时写错了。尝试对一个int值进行%s打印。当然就是非法内存访问了。
+
+```
+mylogd("%s", int_val); 
+```
+
+# S08
+
+这一步，实现服务端的发送操作。
+
+采用电平触发方式。所以不要一直关注write，只在需要发送的时候，进行关注，发送完成，马上取消关注。
+
+否则会造成busy-loop。
+
+没有新增类。只是修改。
+
+Channel：增加3个方法，enableWriting、disableWriting、isWriting。
+
+Socket：增加一个shutdownWrite方法。
+
+TcpCopnnection：
+
+增加send和shutdown函数。及对应的InLoop函数。
+
+增加m_outputBuffer成员变量。
+
+枚举增加kDisconnecting。这个是在shutdown里设置，在InLoop函数里才变成kDisconnected。
+
+实现之前留空的handleWrite函数。
+
+现在实现了发送，就可以开始做echo了。
+
 
 
 

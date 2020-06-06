@@ -70,7 +70,7 @@ void TcpConnection::handleRead(Timestamp receiveTime)
     int savedErrno = 0;
     ssize_t n = m_inputBuffer.readFd(m_channel->fd(), &savedErrno);
     if(n > 0) {
-        mylogd("readable bytes:%d, &m_inputBuffer;0x%p", m_inputBuffer.readableBytes(), &m_inputBuffer);
+        //mylogd("readable bytes:%d, &m_inputBuffer;0x%p", m_inputBuffer.readableBytes(), &m_inputBuffer);
 
         m_messageCallback(shared_from_this(), &m_inputBuffer, receiveTime);
     } else if(n == 0) {
@@ -83,7 +83,32 @@ void TcpConnection::handleRead(Timestamp receiveTime)
 
 void TcpConnection::handleWrite()
 {
-
+    m_loop->assertInLoopThread();
+    if(m_channel->isWriting()) {
+        ssize_t n = ::write(
+            m_channel->fd(),
+            m_outputBuffer.peek(),
+            m_outputBuffer.readableBytes()
+        );
+        if(n > 0) {
+            m_outputBuffer.retrieve(n);
+            if(m_outputBuffer.readableBytes() == 0) {
+                //说明buffer里的数据都发送完成了。
+                //停止关注可写事件。
+                m_channel->disableWriting();
+                if(m_state == kDisconnecting) {
+                    shutdownInLoop();
+                }
+            } else {
+                //说明还有数据要发送。
+                mylogd("going to write more data");
+            }
+        } else {
+            myloge("write error");
+        }
+    } else {
+        myloge("connection is down");
+    }
 }
 
 void TcpConnection::handleClose()
@@ -98,6 +123,67 @@ void TcpConnection::handleError()
     myloge("socket error:%d", err);
 }
 
+
+void TcpConnection::send(const std::string& message)
+{
+    if(m_state == kConnected) {
+        if(m_loop->isInLoopThread()) {
+            sendInLoop(message);
+        } else {
+            m_loop->runInLoop(
+                std::bind(&TcpConnection::sendInLoop, this, message)
+            );
+        }
+    }
+}
+
+void TcpConnection::sendInLoop(const std::string& message)
+{
+    m_loop->assertInLoopThread();
+    ssize_t nwrote = 0;
+    if(!m_channel->isWriting() && m_outputBuffer.readableBytes()==0) {
+        //如果当前输出buffer里没有内容，则直接写。
+        //第一次发送，就是这种情况。
+        nwrote = ::write(m_channel->fd(), message.data(), message.size());
+        if(nwrote >= 0) {
+            if((size_t)nwrote < message.size()) {
+                //说明没有写完。
+                mylogd("going to write more data");
+            }
+        } else {
+            //小于0
+            //说明write出错了。
+            if(errno != EWOULDBLOCK) {
+                mylogd("write error ");
+            }
+        }
+    }
+    if((size_t)nwrote < message.size()) {
+        m_outputBuffer.append(message.data()+nwrote, message.size()-nwrote);
+        if(!m_channel->isWriting()) {
+            m_channel->enableWriting();
+        }
+    }
+}
+
+
+void TcpConnection::shutdown()
+{
+    if(m_state == kConnected) {
+        setState(kDisconnecting);
+        m_loop->runInLoop(std::bind(
+            &TcpConnection::shutdownInLoop, this
+        ));
+    }
+}
+
+void TcpConnection::shutdownInLoop()
+{
+    m_loop->assertInLoopThread();
+    if(!m_channel->isWriting()) {
+        m_socket->shutdownWrite();
+    }
+}
 
 } // namespace net
 

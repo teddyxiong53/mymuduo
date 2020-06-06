@@ -51,6 +51,17 @@ public:
         m_events |= kReadEvent;
         update();
     }
+    void enableWriting() {
+        m_events |= kWriteEvent;
+        update();
+    }
+    void disableWriting() {
+        m_events &= ~kWriteEvent;
+        update();
+    }
+    bool isWriting() {
+        return m_events & kWriteEvent;
+    }
     void disableAll() {
         m_events = kNoneEvent;
         update();

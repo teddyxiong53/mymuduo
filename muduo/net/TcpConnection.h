@@ -53,10 +53,13 @@ public:
     void connectEstablished();
     void connectDestroyed();
 
+    void send(const std::string& message);
+    void shutdown();
 private:
     enum StateE {
         kConnecting,
         kConnected,
+        kDisconnecting,
         kDisconnected,
     };
     void setState(StateE s) {
@@ -66,6 +69,9 @@ private:
     void handleWrite();
     void handleClose();
     void handleError();
+
+    void sendInLoop(const std::string& message);
+    void shutdownInLoop();
 
     EventLoop *m_loop;
     std::string m_name;
@@ -78,6 +84,7 @@ private:
     MessageCallback m_messageCallback;
     CloseCallback m_closeCallback;
     muduo::net::Buffer m_inputBuffer;
+    muduo::net::Buffer m_outputBuffer;
 };
 
 
