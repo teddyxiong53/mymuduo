@@ -128,30 +128,63 @@ void TcpConnection::handleError()
     myloge("socket error:%d", err);
 }
 
-
-void TcpConnection::send(const std::string& message)
+void TcpConnection::send(const void *data, int len)
+{
+    send(StringPiece((const char *) data, len));
+}
+void TcpConnection::send(const StringPiece& message)
 {
     if(m_state == kConnected) {
         if(m_loop->isInLoopThread()) {
             sendInLoop(message);
         } else {
+            void (TcpConnection::*fp)(const StringPiece& message) = &TcpConnection::sendInLoop;
             m_loop->runInLoop(
-                std::bind(&TcpConnection::sendInLoop, this, message)
+                std::bind(fp, this, message.as_string())
             );
         }
     }
 }
 
-void TcpConnection::sendInLoop(const std::string& message)
+void TcpConnection::send(Buffer* buf)
+{
+    if(m_state == kConnected) {
+        if(m_loop->isInLoopThread()) {
+            sendInLoop(buf->peek(), buf->readableBytes());
+            buf->retrieveAll();
+        } else {
+            void (TcpConnection::*fp)(const StringPiece &message) = &TcpConnection::sendInLoop;
+            m_loop->runInLoop(
+                std::bind(
+                    fp,
+                    this,
+                    buf->retrieveAsString()
+                )
+            );
+        }
+    }
+}
+void TcpConnection::sendInLoop(const StringPiece& message)
+{
+    sendInLoop(message.data(), message.size());
+}
+
+
+void TcpConnection::sendInLoop(const void *data, size_t len)
 {
     m_loop->assertInLoopThread();
     ssize_t nwrote = 0;
+    if(m_state == kDisconnected) {
+        myloge("disconnected ,give up writing");
+        return;
+    }
+
     if(!m_channel->isWriting() && m_outputBuffer.readableBytes()==0) {
         //如果当前输出buffer里没有内容，则直接写。
         //第一次发送，就是这种情况。
-        nwrote = ::write(m_channel->fd(), message.data(), message.size());
+        nwrote = ::write(m_channel->fd(), data, len);
         if(nwrote >= 0) {
-            if((size_t)nwrote < message.size()) {
+            if((size_t)nwrote < len) {
                 //说明没有写完。
                 mylogd("going to write more data");
             } else if(m_writeCompleteCallback) {
@@ -168,8 +201,8 @@ void TcpConnection::sendInLoop(const std::string& message)
             }
         }
     }
-    if((size_t)nwrote < message.size()) {
-        m_outputBuffer.append(message.data()+nwrote, message.size()-nwrote);
+    if((size_t)nwrote < len) {
+        m_outputBuffer.append(data+nwrote, len-nwrote);
         if(!m_channel->isWriting()) {
             m_channel->enableWriting();
         }

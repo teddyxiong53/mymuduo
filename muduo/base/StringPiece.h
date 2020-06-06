@@ -65,10 +65,10 @@ public:
     }
 
     //查询类接口
-    const char *data() {
+    const char *data() const {
         return m_ptr;
     }
-    int size() {
+    int size() const{
         return m_length;
     }
     bool empty() {
@@ -120,13 +120,13 @@ public:
         return !(*this == x);
     }
 
-    std::string as_string() {
+    std::string as_string() const{
         return std::string(data(), size());
     }
     void CopyToString(std::string *target) {
         target->assign(m_ptr, m_length);
     }
-    
+
 };
 
 } // namespace muduo

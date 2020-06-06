@@ -38,7 +38,7 @@ ALL_EXE := test chat_client chat_server
 
 CXXFLAGS += -g -O0 -std=c++11 -I./  -Wformat=0
 
-LDFLAGS = -L./  -lpthread  -lmuduo
+LDFLAGS = -L./  -lmuduo -lpthread
 
 
 

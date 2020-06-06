@@ -56,8 +56,9 @@ public:
     }
     void connectEstablished();
     void connectDestroyed();
-
-    void send(const std::string& message);
+    void send(const void *data, int len);
+    void send(const StringPiece& message);
+    void send(Buffer* buf);
     void shutdown();
 private:
     enum StateE {
@@ -74,7 +75,8 @@ private:
     void handleClose();
     void handleError();
 
-    void sendInLoop(const std::string& message);
+    void sendInLoop(const StringPiece& message);
+    void sendInLoop(const void *data, size_t len);
     void shutdownInLoop();
 
     EventLoop *m_loop;
