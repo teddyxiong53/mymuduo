@@ -6,6 +6,8 @@
 
 #include "muduo/net/Callbacks.h"
 #include "muduo/net/TcpConnection.h"
+#include "muduo/net/EventLoopThreadPool.h"
+
 namespace muduo
 {
 namespace net
@@ -19,7 +21,8 @@ TcpServer::TcpServer(
    m_name(listenAddr.toIpPort()),
    m_acceptor(new Acceptor(loop, listenAddr)),
    m_started(false),
-   m_nextConnId(1)
+   m_nextConnId(1),
+   m_threadPool(new EventLoopThreadPool(loop))
 {
     m_acceptor->setNewConnectionCallback(std::bind(
         &TcpServer::newConnection, this, _1, _2
@@ -32,10 +35,16 @@ TcpServer::~TcpServer()
 
 }
 
+void TcpServer::setThreadNum(int numThreads)
+{
+    m_threadPool->setThreadNum(numThreads);
+}
+
 void TcpServer::start()
 {
     if(!m_started) {
         m_started = true;
+        m_threadPool->start();
     }
     if(!m_acceptor->listening()) {
         m_loop->runInLoop(
@@ -56,9 +65,11 @@ void TcpServer::newConnection(
 
     mylogd("new connection from: %s", peerAddr.toIpPort().c_str());
     InetAddress localAddr(sockets::getLocalAddr(sockfd));
+
+    EventLoop *ioloop = m_threadPool->getNextLoop();
     //然后创建一个TCPConnection
     TcpConnectionPtr conn(
-        new TcpConnection(m_loop, m_name, sockfd, localAddr, peerAddr)
+        new TcpConnection(ioloop, m_name, sockfd, localAddr, peerAddr)
     );
     m_connections[connName] = conn;
     conn->setConnectionCallback(m_connectionCallback);
@@ -68,14 +79,25 @@ void TcpServer::newConnection(
         std::bind(&TcpServer::removeConnection, this, _1)
     );
 
-    conn->connectEstablished();
+    ioloop->runInLoop(
+        std::bind(&TcpConnection::connectEstablished, conn)
+    );
 }
 
 void TcpServer::removeConnection(const TcpConnectionPtr& conn)
 {
+    m_loop->runInLoop(
+        std::bind(&TcpServer::removeConnectionInLoop, this, conn)
+    );
+}
+
+void TcpServer::removeConnectionInLoop(const TcpConnectionPtr& conn)
+{
     mylogd("remove connection");
+    m_loop->assertInLoopThread();
     size_t n = m_connections.erase(conn->name());
-    m_loop->queueInLoop(
+    EventLoop *ioLoop = conn->getLoop();
+    ioLoop->queueInLoop(
         std::bind(&TcpConnection::connectDestroyed, conn)
     );
 }

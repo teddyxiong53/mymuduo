@@ -15,6 +15,7 @@ namespace net
 class Acceptor;
 class EventLoop;
 class TcpConnection;
+class EventLoopThreadPool;
 
 class TcpServer: muduo::noncopyable {
 public:
@@ -25,6 +26,8 @@ public:
     ~TcpServer();
 
     void start();
+    void setThreadNum(int numThreads);
+
     void setConnectionCallback(const ConnectionCallback& cb)
     {
         m_connectionCallback = cb;
@@ -37,10 +40,11 @@ public:
     {
         m_writeCompleteCallback = cb;
     }
-    
+
 private:
     void newConnection(int sockfd, const InetAddress& peerAddr);
     void removeConnection(const TcpConnectionPtr& conn);
+    void removeConnectionInLoop(const TcpConnectionPtr& conn);
 
     typedef std::map<std::string, TcpConnectionPtr> ConnectionMap;
     EventLoop *m_loop;
@@ -52,7 +56,7 @@ private:
     bool m_started;
     int m_nextConnId;
     ConnectionMap m_connections;
-
+    std::unique_ptr<EventLoopThreadPool> m_threadPool;
 };
 
 } // namespace net
