@@ -19,6 +19,7 @@
 #include "muduo/net/TcpConnection.h"
 #include "muduo/net/Buffer.h"
 #include "muduo/net/Connector.h"
+#include "muduo/net/TcpClient.h"
 
 using muduo::Timestamp;
 using muduo::CountDownLatch;
@@ -314,6 +315,28 @@ void test_EventLoopS11()
     connector->start();
     loop.loop();
 }
+
+void onMessageS12(const muduo::net::TcpConnectionPtr& conn, muduo::net::Buffer* buf, muduo::Timestamp receiveTime)
+{
+    mylogd("receive from connection:%s", conn->peerAddress().toIpPort().c_str());
+    std::string content = buf->retrieveAsString();
+    mylogd("content:%s", content.c_str());
+    conn->send(content);
+    //buf->retrieveAll();
+}
+void test_EventLoopS12()
+{
+    muduo::net::EventLoop loop;
+    g_loop = &loop;
+    muduo::net::InetAddress addr("127.0.0.1", 2001);
+    muduo::net::TcpClient client(&loop, addr);
+    client.setConnectionCallback(onConnection);
+    client.setMessageCallback(onMessageS12);
+    client.enableRetry();
+    client.connect();
+
+    loop.loop();
+}
 int main(int argc, char const *argv[])
 {
     printf("------------muduo test begin --------------\n");
@@ -333,7 +356,8 @@ int main(int argc, char const *argv[])
     //test_EventLoopS08();
     //test_EventLoopS09();
     //test_EventLoopS10();
-    test_EventLoopS11();
+    //test_EventLoopS11();
+    test_EventLoopS12();
     printf("------------muduo test end --------------\n");
     return 0;
 }

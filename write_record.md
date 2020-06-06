@@ -184,3 +184,11 @@ Timer.h：加入sequence。和s_numCreated这个表示static变量。
 
 TimerQueue：增加cancel。这才增加了ActiveTimerSet。
 
+# S12
+
+这一步是增加了TcpClient这个类。
+
+实现一个反向的echo。服务端用nc -l 127.0.0.1 2001。
+
+测试程序连接上来。服务端主动给客户端发消息，客户端 把消息原样返回。
+
