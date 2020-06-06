@@ -205,7 +205,7 @@ void onMessageS07(const muduo::net::TcpConnectionPtr& conn, muduo::net::Buffer* 
 
     mylogd("buf addr:0x%p", buf);
     mylogd("buf->peek():0x%p", buf->peek());
-    //mylogd("receive %s bytes ", buf->readableBytes());
+    mylogd("receive %d bytes ", buf->readableBytes());
     mylogd("%d", buf->writableBytes());
     mylogd("%s", receiveTime.toFormattedString().c_str());
     //mylogd("content:%s", buf->retrieveAsString().c_str());
