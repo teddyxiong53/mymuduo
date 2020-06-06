@@ -94,6 +94,30 @@ TCPServer里增加：removeConnection。
 
 这个没有新增测试用例。直接用上一个的测试用例就可以。然后客户端练上来，主动断开连接，可以看到相关的打印。
 
+# S07
+
+这一步主要是引入Buffer机制。
+
+之前的MessageCallback是：
+
+```
+typedef boost::function<void (const TcpConnectionPtr&,
+                              const char* data,
+                              ssize_t len)> MessageCallback;
+```
+
+现在改成：
+
+```
+typedef boost::function<void (const TcpConnectionPtr&,
+                              Buffer* buf,
+                              Timestamp)> MessageCallback;
+```
+
+时间戳不是必须的，只是一个辅助性的东西。
+
+写完后，调试出现了死机问题。
+
 
 
 

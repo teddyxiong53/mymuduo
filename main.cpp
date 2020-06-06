@@ -17,6 +17,7 @@
 #include "muduo/net/SocketOps.h"
 #include "muduo/net/TcpServer.h"
 #include "muduo/net/TcpConnection.h"
+#include "muduo/net/Buffer.h"
 
 using muduo::Timestamp;
 using muduo::CountDownLatch;
@@ -70,6 +71,7 @@ void timeout()
     mylogd("timeout happen");
     g_loop->quit();
 }
+#if 0
 void test_EventLoopS01()
 {
     muduo::net::EventLoop loop;
@@ -87,6 +89,7 @@ void test_EventLoopS01()
     close(timerfd);
 
 }
+#endif
 void print()
 {
     static int i = 0;
@@ -170,7 +173,7 @@ void onMessage(const muduo::net::TcpConnectionPtr& conn,
 {
     mylogd("get message:%s", data);
 }
-
+#if 0
 void test_EventLoopS05()
 {
     muduo::net::InetAddress listenAddr(2001);
@@ -182,10 +185,55 @@ void test_EventLoopS05()
     server.start();
     loop.loop();
 }
+
 void test_EventLoopS06()
 {
     test_EventLoopS05();
 }
+#endif
+
+void onConnectionS07(const muduo::net::TcpConnectionPtr& conn)
+{
+    if(conn->connected()) {
+        mylogd("new connection [%s] from %s", conn->name().c_str(), conn->peerAddress().toIpPort().c_str());
+    } else {
+        mylogd("disconnected [%s]", conn->name().c_str());
+    }
+}
+void onMessageS07(const muduo::net::TcpConnectionPtr& conn, muduo::net::Buffer* buf, muduo::Timestamp receiveTime)
+{
+
+    mylogd("buf addr:0x%p", buf);
+    mylogd("buf->peek():0x%p", buf->peek());
+    //mylogd("receive %s bytes ", buf->readableBytes());
+    mylogd("%d", buf->writableBytes());
+    mylogd("%s", receiveTime.toFormattedString().c_str());
+    //mylogd("content:%s", buf->retrieveAsString().c_str());
+}
+void test_EventLoopS07()
+{
+    muduo::net::EventLoop loop;
+    muduo::net::InetAddress listenAddr(2001);
+
+    muduo::net::TcpServer server(&loop, listenAddr);
+    server.setConnectionCallback(onConnectionS07);
+    server.setMessageCallback(onMessageS07);
+    server.start();
+    loop.loop();
+}
+using muduo::net::Buffer;
+void test_Buffer()
+{
+    Buffer buf;
+    mylogd("buf.readableBytes():%d", buf.readableBytes());
+    mylogd("buf.writableBytes():%d", buf.writableBytes());
+    std::string str(200, 'x');
+    buf.append(str);
+    mylogd("after append 200 x");
+    mylogd("buf.readableBytes():%d", buf.readableBytes());
+    mylogd("buf.writableBytes():%d", buf.writableBytes());
+}
+
 int main(int argc, char const *argv[])
 {
     printf("------------muduo test begin --------------\n");
@@ -199,7 +247,9 @@ int main(int argc, char const *argv[])
     //test_EventLoopS03_2();
     // test_EventLoopS04();
     //test_EventLoopS05();
-    test_EventLoopS06();
+    //test_EventLoopS06();
+    //test_Buffer();
+    test_EventLoopS07();
     printf("------------muduo test end --------------\n");
     return 0;
 }

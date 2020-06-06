@@ -3,6 +3,7 @@
 
 #include <functional>
 #include <memory>
+#include "muduo/base/Timestamp.h"
 
 namespace muduo
 {
@@ -17,12 +18,13 @@ using std::placeholders::_4;
 typedef std::function<void()> TimerCallback;
 
 class TcpConnection;
+class Buffer;
 typedef std::shared_ptr<TcpConnection> TcpConnectionPtr;
 
 typedef std::function<void (const TcpConnectionPtr&)> ConnectionCallback;
 typedef std::function<void (const TcpConnectionPtr&,
-        const char *data,
-        ssize_t len
+        Buffer* buf,
+        muduo::Timestamp
     )> MessageCallback;
 
 typedef std::function<void (const TcpConnectionPtr& )> CloseCallback;

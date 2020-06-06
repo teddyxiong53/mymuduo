@@ -4,6 +4,7 @@
 #include "muduo/net/InetAddress.h"
 #include "muduo/net/Callbacks.h"
 #include "muduo/base/noncopyable.h"
+#include "muduo/net/Buffer.h"
 
 namespace muduo
 {
@@ -61,7 +62,7 @@ private:
     void setState(StateE s) {
         m_state = s;
     }
-    void handleRead();
+    void handleRead(Timestamp receiveTime);
     void handleWrite();
     void handleClose();
     void handleError();
@@ -76,7 +77,7 @@ private:
     ConnectionCallback m_connectionCallback;
     MessageCallback m_messageCallback;
     CloseCallback m_closeCallback;
-
+    muduo::net::Buffer m_inputBuffer;
 };
 
 

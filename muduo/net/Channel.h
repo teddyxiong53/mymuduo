@@ -4,20 +4,25 @@
 #include <memory>
 #include "muduo/base/noncopyable.h"
 #include <functional>
+#include "muduo/base/Timestamp.h"
 
 namespace muduo
 {
 namespace net
 {
 class EventLoop;
+using muduo::Timestamp;
+
 class Channel: noncopyable
 {
 public:
     typedef std::function<void()> EventCallback;
+    typedef std::function<void(muduo::Timestamp)> ReadEventCallback;
     Channel(EventLoop *loop, int fd);
     ~Channel();
-    void handleEvent();
-    void setReadCallback(const EventCallback& cb) {
+    void handleEvent(Timestamp receiveTime);
+
+    void setReadCallback(const ReadEventCallback& cb) {
         m_readCallback = cb;
     }
     void setWriteCallback(const EventCallback& cb) {
@@ -73,7 +78,7 @@ private:
     int m_index;
     bool m_eventHandling;
 
-    EventCallback m_readCallback;
+    ReadEventCallback m_readCallback;
     EventCallback m_writeCallback;
     EventCallback m_errorCallback;
     EventCallback m_closeCallback;

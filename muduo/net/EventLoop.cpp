@@ -34,7 +34,8 @@ EventLoop::EventLoop()
    m_poller(new Poller(this)),
    m_timerQueue(new TimerQueue(this)),
    m_wakeupFd(createEventfd()),
-   m_wakeupChannel(new Channel(this, m_wakeupFd))
+   m_wakeupChannel(new Channel(this, m_wakeupFd)),
+   m_pollReturnTime()
 {
     mylogd("EventLoop created in %d", m_threadId);
     if(t_loopInThisThread) {
@@ -60,9 +61,9 @@ void EventLoop::loop()
     m_quit = false;
     while(!m_quit) {
         m_activeChannels.clear();
-        m_poller->poll(kPollTimeMs, &m_activeChannels);
+        m_pollReturnTime = m_poller->poll(kPollTimeMs, &m_activeChannels);
         for(auto it = m_activeChannels.begin(); it!=m_activeChannels.end(); it++) {
-            (*it)->handleEvent();
+            (*it)->handleEvent(m_pollReturnTime);
         }
         doPendingFunctors();
     }

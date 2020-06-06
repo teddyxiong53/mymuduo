@@ -26,7 +26,7 @@ Timestamp Poller::poll(int timeoutMs, ChannelList* activeChannels)
         mylogd("%d events happens", numEvents);
         fillActiveChannels(numEvents, activeChannels);
     } else if(numEvents == 0) {
-        mylogd("nothing happens");
+        //mylogd("nothing happens");
     } else {
         myloge("poll error");
     }

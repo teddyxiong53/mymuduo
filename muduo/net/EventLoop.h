@@ -42,7 +42,7 @@ public:
 
     void updateChannel(Channel* channel);
     void removeChannel(Channel* channel);
-    
+
     TimerId runAfter(double delay, const TimerCallback& cb);
     TimerId runAt(const Timestamp &time,const TimerCallback &cb);
     TimerId runEvery(double interval, const TimerCallback& cb);
@@ -71,6 +71,7 @@ private:
     std::unique_ptr<TimerQueue> m_timerQueue;
 
     bool m_quit;
+    Timestamp m_pollReturnTime;
 };
 
 

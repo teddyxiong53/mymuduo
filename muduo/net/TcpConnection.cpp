@@ -30,7 +30,7 @@ TcpConnection::TcpConnection(
 {
     mylogd("tcp connection construct");
     m_channel->setReadCallback(
-        std::bind(&TcpConnection::handleRead, this)
+        std::bind(&TcpConnection::handleRead, this, _1)
     );
     m_channel->setWriteCallback(
         std::bind(&TcpConnection::handleWrite, this)
@@ -64,12 +64,15 @@ void TcpConnection::connectDestroyed()
     m_connectionCallback(shared_from_this());
 }
 
-void TcpConnection::handleRead()
+void TcpConnection::handleRead(Timestamp receiveTime)
 {
-    char buf[65536];
-    ssize_t n = ::read(m_channel->fd(), buf, sizeof(buf));
+    //ssize_t n = ::read(m_channel->fd(), buf, sizeof(buf));
+    int savedErrno = 0;
+    ssize_t n = m_inputBuffer.readFd(m_channel->fd(), &savedErrno);
     if(n > 0) {
-        m_messageCallback(shared_from_this(), buf, n);
+        mylogd("readable bytes:%d, &m_inputBuffer;0x%p", m_inputBuffer.readableBytes(), &m_inputBuffer);
+
+        m_messageCallback(shared_from_this(), &m_inputBuffer, receiveTime);
     } else if(n == 0) {
         handleClose();
     } else {
