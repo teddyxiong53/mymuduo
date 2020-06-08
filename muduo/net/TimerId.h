@@ -2,6 +2,8 @@
 #define _MUDUO_TIMER_ID_H_
 
 #include "muduo/base/copyable.h"
+#include "mylog.h"
+
 namespace muduo
 {
 namespace net
@@ -11,11 +13,20 @@ class Timer ;
 class TimerId : copyable
 {
 public:
-    explicit TimerId(Timer* timer= NULL, int64_t sequence=0)
+    TimerId()
+     : m_timer(NULL),
+       m_sequence(0)
+    {
+
+    }
+    TimerId(Timer* timer, int64_t sequence=0)
      : m_timer(timer),
        m_sequence(sequence)
     {
-
+        mylogd("add timer:%lld", m_sequence);
+    }
+    int64_t sequence() const {
+        return m_sequence;
     }
     friend class TimerQueue;
 private:

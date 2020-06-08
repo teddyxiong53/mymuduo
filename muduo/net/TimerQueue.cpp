@@ -19,6 +19,7 @@ int createTimerFd()
         myloge("create timerfd fail");
         exit(1);
     }
+    mylogd("timerfd:%d", timerfd);
     return timerfd;
 }
 
@@ -80,6 +81,8 @@ TimerQueue::TimerQueue(EventLoop *loop)
 }
 TimerQueue::~TimerQueue()
 {
+    m_timerfdChannel.disableAll();
+    //m_timerfdChannel.remove();
     ::close(m_timerfd);
     for(auto it = m_timers.begin(); it!=m_timers.end(); it++) {
         delete it->second;
@@ -91,12 +94,11 @@ TimerId TimerQueue::addTimer(const TimerCallback& cb,
     double interval
 )
 {
-    Timer *timer = new Timer(cb, when, interval);
+    Timer *timer = new Timer(std::move(cb), when, interval);
     m_loop->runInLoop(
         std::bind(&TimerQueue::addTimerInLoop, this, timer)
     );
-    return TimerId(timer);
-
+    return TimerId(timer, timer->sequence());
 }
 void TimerQueue::addTimerInLoop(Timer *timer)
 {
@@ -176,6 +178,7 @@ void TimerQueue::reset(const std::vector<Entry>& expired, Timestamp now)
 
 void TimerQueue::cancel(TimerId timerId)
 {
+    mylogd("cancel timer:%lld", timerId.m_sequence);
     m_loop->runInLoop(
         std::bind(&TimerQueue::cancelInLoop, this, timerId)
     );
@@ -187,7 +190,9 @@ void TimerQueue::cancelInLoop(TimerId timerId)
     //因为TimerQueue是Timer的友元，所以可以直接在这里访问Timer的成员变量。
     ActiveTimer timer(timerId.m_timer, timerId.m_sequence);
     ActiveTimerSet::iterator it = m_activeTimers.find(timer);
+
     if(it != m_activeTimers.end()) {
+        
         //找到了。
         size_t n = m_timers.erase(Entry(it->first->expiration(), it->first));
         delete it->first;

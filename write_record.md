@@ -217,3 +217,9 @@ client.cpp
 
 server.cpp
 
+client，需要使用EventLoopThread，因为主线程需要进行输入。
+
+
+
+# hub
+

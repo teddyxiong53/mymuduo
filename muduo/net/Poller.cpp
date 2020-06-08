@@ -42,6 +42,7 @@ void Poller::fillActiveChannels(
     for(; it != m_pollfds.end() && numEvents>0; it++) {
         if(it->revents > 0) {
             numEvents --;
+            mylogd("fd:%d", it->fd);
             auto ch = m_channels.find(it->fd);
             Channel *channel = ch->second;
             channel->set_revents(it->revents);

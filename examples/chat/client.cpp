@@ -78,8 +78,6 @@ int main(int argc, char const *argv[])
         }
         client.disconnect();
         sleep(1);
-
-
     } else {
         printf("usage:%s ip port\n", argv[0]);
     }

@@ -33,6 +33,7 @@ static int  createEventfd()
         myloge("create eventfd fail");
         abort();
     }
+    mylogd("eventfd:%d", fd);
     return fd;
 }
 
