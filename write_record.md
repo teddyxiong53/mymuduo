@@ -223,3 +223,21 @@ client，需要使用EventLoopThread，因为主线程需要进行输入。
 
 # hub
 
+
+
+# snapcast
+
+基于muduo来实现snapcast的功能。
+
+本来是基于boost.asio的。
+
+只考虑最简单的情况，pcm方式，不考虑其他编解码的。
+
+也只使用c++11的语法。不引入boost的。
+
+不考虑零配置的。
+
+日志也只用mylog。
+
+参数解析的也不用。
+

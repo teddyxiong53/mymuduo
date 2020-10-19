@@ -5,4 +5,5 @@ test
 *.a
 chat_server
 chat_client
-
+snapclient
+snapserver
