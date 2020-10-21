@@ -5,9 +5,17 @@
 #include "common/daemon.h"
 #include <vector>
 #include "client/player/alsa_player.h"
+#include "muduo/base/noncopyable.h"
+#include "controller.h"
+#include "muduo/net/EventLoopThread.h"
+#include <iostream>
 
 //默认不用daemon
 // #define USE_DAEMON
+using namespace muduo;
+// using namespace muduo::net;
+using muduo::net::EventLoopThread;
+
 
 
 PcmDevice getPcmDevice(const std::string& soundCard)
@@ -41,13 +49,17 @@ int main(int argc, char const *argv[])
     // PcmDevice pcmDevice = getPcmDevice("default");
     int instance = 1;
     std::string host = "127.0.0.1";
-    int port = 1704;
+    int port = 2020;
     int latency = 0;
-    std::unique_ptr<Controller> controller(new Controller(host, instance));
-    controller->start(pcmDevice, host, port, latency);
-    while(1) {
-        sleep(1);
-    }
-    controller->stop();
+    EventLoopThread loopThread;
+    InetAddress serverAddr(host, port);
+    Controller controller(loopThread.startLoop(), serverAddr);
+    controller.connect();
+    //
+    std::string line;
+    while(std::getline(std::cin, line)) {
+            controller.write(line);
+        }
+    controller.disconnect();
     return 0;
 }

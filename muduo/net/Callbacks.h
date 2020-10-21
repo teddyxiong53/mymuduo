@@ -5,15 +5,17 @@
 #include <memory>
 #include "muduo/base/Timestamp.h"
 
+using std::placeholders::_1;
+using std::placeholders::_2;
+using std::placeholders::_3;
+using std::placeholders::_4;
+
 namespace muduo
 {
 namespace net
 {
 
-using std::placeholders::_1;
-using std::placeholders::_2;
-using std::placeholders::_3;
-using std::placeholders::_4;
+
 
 typedef std::function<void()> TimerCallback;
 

@@ -219,7 +219,35 @@ server.cpp
 
 client，需要使用EventLoopThread，因为主线程需要进行输入。
 
+作为ChatClient。应该有哪些接口？
+连接服务端
+断开服务器
+发送消息
+ChatClient需要实现的回调：
+连接回调
+消息回调
+ChatClient需要有哪些成员？
+一个TCPClient。
+一个codec。编码和解码数据。
+编码和解码，都是处理最前面4个字节的长度。
 
+TcpClient帮ChatClient完成了哪些操作？
+接收
+
+TcpClient应该有哪些接口？
+连接
+断开
+stop
+	这个跟断开的区别是什么？
+	是调用的Connector的stop接口。
+	是提交一个任务到loop里执行。
+		把对应的socket关闭掉。
+	断开是操作一个connection。
+	stop是操作Connector。
+	
+一个TCPClient，只有一个TcpConnection。
+
+设置回调，使用std::move.
 
 # hub
 
@@ -240,4 +268,6 @@ client，需要使用EventLoopThread，因为主线程需要进行输入。
 日志也只用mylog。
 
 参数解析的也不用。
+
+先写snapclient。这个是一个tcp client。
 
