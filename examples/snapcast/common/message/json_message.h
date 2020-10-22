@@ -24,12 +24,12 @@ public:
         readVal(stream, s);
         msg = json::parse(s);
     }
-    uint32_t getSize() override
+    uint32_t getSize() const override
     {
         return sizeof(uint32_t) + msg.dump().size();
     }
 protected:
-    void doserialize(std::ostream& stream) override
+    void doserialize(std::ostream& stream)  override
     {
         // mylogd("%s", msg.dump().c_str());
         writeVal(stream, msg.dump());

@@ -56,9 +56,13 @@ public:
         m_readIndex = kCheapPrepend;
         m_writeIndex = kCheapPrepend;
     }
-    std::string retrieveAsString() {
-        std::string str(peek(), readableBytes());
-        retrieveAll();
+    std::string retrieveAllAsString()
+    {
+        return retrieveAsString(readableBytes());
+    }
+    std::string retrieveAsString(size_t len) {
+        std::string str(peek(), len);
+        retrieve(len);
         return str;
     }
     void append(const std::string& str) {

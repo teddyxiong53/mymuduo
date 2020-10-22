@@ -55,12 +55,13 @@ int main(int argc, char const *argv[])
     EventLoopThread loopThread;
     InetAddress serverAddr(host, port);
     Controller controller(loopThread.startLoop(), serverAddr);
-    controller.connect();
+    controller.start();
+
     //
-    std::string line;
-    while(std::getline(std::cin, line)) {
-            controller.write(line);
-        }
+    while(1) {
+        sleep(1);
+    }
+
     controller.disconnect();
     return 0;
 }
@@ -79,9 +80,22 @@ void test_message()
     oss.str("123");
     std::cout << oss.str() << "\n";
 }
+void test_vector()
+{
+    std::string s1("123");
+    std::string s2("Any elements held in the container before the call are destroyed and replaced by newly constructed elements (no assignments of elements take place).");
+    std::vector<char> buffer(s1.begin(),s1.end());
+    buffer.resize(2);
+    buffer.assign(s2.begin(), s2.end());
+    for(auto i: buffer) {
+        printf("%c", i);
+    }
+    printf("\n");
+}
 int main(int argc, char const *argv[])
 {
     // test_mesage();
+    test_vector();
     return 0;
 }
 

@@ -124,7 +124,7 @@ struct BaseMessage
         readVal(stream, size);
 
     }
-    virtual uint32_t getSize()
+    virtual uint32_t getSize() const
     {
         return 3*sizeof(uint16_t)+ 2*sizeof(tv) + sizeof(uint32_t);
     }
@@ -135,7 +135,7 @@ struct BaseMessage
         std::istream is(&databuf);
         read(is);
     }
-    void deserilized(const BaseMessage& baseMessage, char *payload)
+    void deserialize(const BaseMessage& baseMessage, char *payload)
     {
         type = baseMessage.type;
         id = baseMessage.id;
