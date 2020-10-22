@@ -24,7 +24,7 @@ public:
         readVal(stream, s);
         msg = json::parse(s);
     }
-    uint32_t getSize() const override
+    uint32_t getSize()  override
     {
         return sizeof(uint32_t) + msg.dump().size();
     }

@@ -339,6 +339,12 @@ Time消息也是直接继承自BaseMessage，而不是JsonMessage。
 
 然后是处理消息接收。这个是主要的。
 
+开始加player和stream的。
+
+stream依赖DoubleBuffer。
+
+WireChunk消息直接继承BaseMessage。
+
 
 
 

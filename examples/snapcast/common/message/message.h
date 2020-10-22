@@ -124,7 +124,7 @@ struct BaseMessage
         readVal(stream, size);
 
     }
-    virtual uint32_t getSize() const
+    virtual uint32_t getSize()
     {
         return 3*sizeof(uint16_t)+ 2*sizeof(tv) + sizeof(uint32_t);
     }

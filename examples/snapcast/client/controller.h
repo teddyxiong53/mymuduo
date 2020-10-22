@@ -7,6 +7,10 @@
 #include "muduo/net/TcpConnection.h"
 #include "common/message/message.h"
 #include "muduo/base/Thread.h"
+#include "common/message/server_settings.h"
+#include "client/stream.h"
+#include "client/player/player.h"
+#include "client/decoder/decoder.h"
 
 using muduo::net::TcpClient;
 using muduo::net::EventLoop;
@@ -38,5 +42,10 @@ private:
     size_t m_instance;
     muduo::Thread m_controllerThread;
     bool m_active;
+    std::shared_ptr<msg::ServerSettings> m_serverSettings;
+    std::shared_ptr<Stream> m_stream;
+    std::unique_ptr<decoder::Decoder> m_decoder;
+    std::unique_ptr<Player> m_player;
+    std::shared_ptr<msg::CodecHeader> m_headerChunk;
 
 };

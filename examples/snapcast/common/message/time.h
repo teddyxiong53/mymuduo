@@ -16,7 +16,7 @@ public:
         readVal(stream, latency.sec);
         readVal(stream, latency.usec);
     }
-    uint32_t getSize() const override
+    uint32_t getSize()  override
     {
         return sizeof(tv);
     }

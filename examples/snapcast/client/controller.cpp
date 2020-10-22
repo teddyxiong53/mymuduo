@@ -4,6 +4,7 @@
 #include "common/message/hello.h"
 #include <unistd.h>
 #include "common/message/time.h"
+#include "common/message/server_settings.h"
 
 Controller::Controller(EventLoop* loop, const InetAddress& addr)
 : m_client(loop, addr),
@@ -90,8 +91,21 @@ void Controller::onMessage(const TcpConnectionPtr& conn,
         reply.deserialize(baseMessage, &buffer[0]);
         //计算时间差。
     } else if(baseMessage.type == message_type::kCodecHeader) {
-
+        //这个消息，会触发一些类的创建。
+        m_headerChunk.reset(new msg::CodecHeader());
+        m_headerChunk->deserialize(baseMessage, &buffer[0]);
+        mylogd("codec name:%s", m_headerChunk->codec.c_str());
+        //
+        m_decoder.reset(nullptr);
+        m_stream = nullptr;
+        m_player.reset(nullptr);
+        if(m_headerChunk->codec == "pcm") {
+            m_decoder = std::make_unique<decoder::PcmDecoder>();
+        }
     } else if(baseMessage.type == message_type::kServerSettings) {
+        m_serverSettings.reset(new msg::ServerSettings());
+        m_serverSettings->deserialize(baseMessage, &buffer[0]);
+        mylogd("server settings:");
 
     } else if(baseMessage.type == message_type::kStreamTags) {
 

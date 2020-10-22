@@ -3,6 +3,8 @@
 #include <math.h>
 #include "mylog.h"
 
+
+
 Player::Player(
     const PcmDevice& pcmDevice,
     std::shared_ptr<Stream> stream
@@ -75,3 +77,5 @@ void Player::adjustVolume(char *buffer, size_t frames)
         }
     }
 }
+
+

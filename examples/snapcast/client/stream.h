@@ -1,6 +1,7 @@
 #pragma once
 #include "common/sample_format.h"
 #include "common/time_defs.h"
+#include "client/double_buffer.h"
 
 class Stream
 {
@@ -16,7 +17,14 @@ public:
     }
     bool waitForChunk(size_t ms) const;
     void clearChunks();
+    void setRealSampleRate(double rate);
 private:
     SampleFormat m_format;
+    DoubleBuffer<chronos::usec::rep> m_miniBuffer;
+    DoubleBuffer<chronos::usec::rep> m_buffer;
+    DoubleBuffer<chronos::usec::rep> m_shortBuffer;
+    long m_correctAfterXFrames;
+    chronos::msec m_bufferMs;
+    
 };
 
