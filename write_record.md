@@ -271,3 +271,24 @@ stop
 
 先写snapclient。这个是一个tcp client。
 
+先写基本通信。
+
+通路可以通之后，就开始写消息部分。这部分跟网络通信没有直接关系。
+
+在common目录下新建message目录。
+
+这个下面的层次关系
+
+```
+message.h
+	这个定义BaseMessage。
+	从这个开始写。
+json_message
+	直接继承BaseMessage。
+	其他都是继承了JsonMessage。
+```
+
+然后写hello消息。
+
+
+

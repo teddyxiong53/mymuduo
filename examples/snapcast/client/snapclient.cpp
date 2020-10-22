@@ -31,6 +31,7 @@ PcmDevice getPcmDevice(const std::string& soundCard)
     return empty;
 }
 
+#if 0
 int main(int argc, char const *argv[])
 {
     #ifdef USER_DAEMON
@@ -63,3 +64,14 @@ int main(int argc, char const *argv[])
     controller.disconnect();
     return 0;
 }
+#else
+#include "common/message/message.h"
+#include "common/message/hello.h"
+int main(int argc, char const *argv[])
+{
+    msg::BaseMessage msg;
+
+    return 0;
+}
+
+#endif
