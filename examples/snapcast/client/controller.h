@@ -4,6 +4,8 @@
 #include "muduo/net/TcpClient.h"
 #include "muduo/net/InetAddress.h"
 #include "muduo/net/Callbacks.h"
+#include "muduo/net/TcpConnection.h"
+#include "common/message/message.h"
 
 using muduo::net::TcpClient;
 using muduo::net::EventLoop;
@@ -17,7 +19,7 @@ public:
     Controller(EventLoop* loop, const InetAddress& addr);
     void connect();
     void disconnect();
-    void write(const muduo::StringPiece& message);
+    void write(msg::BaseMessage* message);
     void onConnection(const TcpConnectionPtr & conn) ;
     void onMessage(const TcpConnectionPtr& conn,
         Buffer* buf,
@@ -26,4 +28,6 @@ private:
     TcpClient m_client;
     std::mutex m_mutex;
     TcpConnectionPtr m_connection;
+    std::string m_hostId;
+    size_t m_instance;
 };

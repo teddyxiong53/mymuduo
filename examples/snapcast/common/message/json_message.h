@@ -2,6 +2,8 @@
 
 #include "common/json.hpp"
 #include "message.h"
+#include "mylog.h"
+
 using json = nlohmann::json;
 
 namespace msg
@@ -29,10 +31,11 @@ public:
 protected:
     void doserialize(std::ostream& stream) override
     {
+        // mylogd("%s", msg.dump().c_str());
         writeVal(stream, msg.dump());
     }
     template<typename T>
-    T get(const std::string& what, const T& def)
+    T get(const std::string& what, const T& def) const
     {
         try {
             if(!msg.count(what)) {

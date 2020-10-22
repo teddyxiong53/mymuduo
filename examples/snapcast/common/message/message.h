@@ -9,6 +9,7 @@
 #include <cstdlib>
 #include <vector>
 #include <stdint.h>
+#include "mylog.h"
 
 struct membuf: public std::basic_streambuf<char>
 {
@@ -148,7 +149,18 @@ struct BaseMessage
     }
     virtual void serialize(std::ostream& stream)
     {
+        // mylogd("");
         writeVal(stream, type);
+        writeVal(stream, id);
+        writeVal(stream, refersTo);
+        writeVal(stream, sent.sec);
+        writeVal(stream, sent.usec);
+        writeVal(stream, received.sec);
+        writeVal(stream, received.usec);
+        size = getSize();
+        writeVal(stream, size);
+        // mylogd("tellp:%d", stream.tellp());
+        doserialize(stream);
     }
 protected:
     void writeVal(std::ostream& stream, const bool& val)
@@ -184,11 +196,15 @@ protected:
     void writeVal(std::ostream& stream, const char *payload, const uint32_t size)
     {
         writeVal(stream, size);
+        // mylogd("size:%d", size);
+        // mylogd("payload:%s", payload);
         stream.write(payload, size);
+        // mylogd("tellp:%d", stream.tellp());
     }
     void writeVal(std::ostream& stream, const std::string& val)
     {
         uint32_t size = val.size();
+        // mylogd("%s", val.c_str());
         writeVal(stream, val.c_str(), size);
     }
 
@@ -239,6 +255,7 @@ protected:
     virtual void doserialize(std::ostream& stream)
     {
         //留空。子类可以选择实现。
+        mylogd("");
     }
 };
 

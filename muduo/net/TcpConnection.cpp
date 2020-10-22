@@ -49,6 +49,10 @@ TcpConnection::~TcpConnection()
     mylogd("tcp connection desctruct");
 }
 
+int TcpConnection::getSocketFd()
+{
+    return m_socket->fd();
+}
 void TcpConnection::connectEstablished()
 {
     m_loop->assertInLoopThread();

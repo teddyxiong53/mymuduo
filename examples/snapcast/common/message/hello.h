@@ -1,6 +1,7 @@
 #pragma once
 #include "json_message.h"
 #include "common/utils.h"
+#include "mylog.h"
 
 namespace msg
 {
@@ -24,6 +25,7 @@ public:
         msg["Instance"] = instance;
         msg["ID"] = id;
         msg["SnapStreamProtocolVersion"] = 2;
+        // mylogd("%s", msg.dump().c_str());
     }
     ~Hello() override = default;
 

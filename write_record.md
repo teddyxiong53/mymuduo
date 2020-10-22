@@ -290,5 +290,36 @@ json_message
 
 然后写hello消息。
 
+先就写这几个。其他的后面再添加。
+
+ostream转普通string。
+
+```
+void someFunc(std::ostream out)
+{
+    std::stringstream ss;
+    ss << out.rdbuf();
+    std::string myString = ss.str();
+}
+```
+
+ostream的构造方法，只有一种，需要一个streambuf指针。
+
+现在我要传递ostringstream来做序列化。
+
+用stringstream是不行的。
+
+printf打印不出来。cout可以打印出来。
+
+前面有字符不对。
+
+我觉得可能是我的代码有问题。
+
+在原始代码上做这个测试看看。
+
+也还是一样。那可能就是ostringstream用得不对。
+
+知道了。序列化的时候，并不是都写的字符串。前面的部分，是写的二进制。所以当字符串打印，当然是不对的。
+
 
 

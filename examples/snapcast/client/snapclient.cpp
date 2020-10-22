@@ -67,10 +67,21 @@ int main(int argc, char const *argv[])
 #else
 #include "common/message/message.h"
 #include "common/message/hello.h"
+
+void test_message()
+{
+    msg::Hello msg("123", "123", 1);
+    std::ostringstream oss;
+    oss.str("");
+    msg.serialize(oss);
+    // mylogd("result:%s", oss.str().c_str());
+    std::cout << oss.str() << "\n";
+    oss.str("123");
+    std::cout << oss.str() << "\n";
+}
 int main(int argc, char const *argv[])
 {
-    msg::BaseMessage msg;
-
+    // test_mesage();
     return 0;
 }
 

@@ -60,6 +60,7 @@ public:
     void send(const StringPiece& message);
     void send(Buffer* buf);
     void shutdown();
+    int getSocketFd();
 private:
     enum StateE {
         kConnecting,
