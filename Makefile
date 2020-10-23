@@ -27,7 +27,11 @@ SNAPCAST_COMMON_OBJ := $(SNAPCAST_COMMON_SRC:.cpp=.o)
 SNAPCAST_COMMON_DEP := $(SNAPCAST_COMMON_OBJ:.o=.d)
 
 SNAPCLIENT_SRC = $(wildcard examples/snapcast/client/*.cpp) \
-					$(wildcard examples/snapcast/client/player/*.cpp)
+					$(wildcard examples/snapcast/client/player/*.cpp) \
+					$(wildcard examples/snapcast/client/decoder/*.cpp) \
+
+
+
 
 # $(error $(SNAPCLIENT_SRC))
 SNAPCLIENT_OBJ := $(SNAPCLIENT_SRC:.cpp=.o)

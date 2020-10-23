@@ -3,8 +3,7 @@
 #include "client/stream.h"
 #include "common/time_defs.h"
 
-namespace player
-{
+
 #define PERIOD_TIME (30*1000)//30ms
 
 AlsaPlayer::AlsaPlayer(
@@ -257,4 +256,3 @@ std::vector<PcmDevice> AlsaPlayer::pcm_list()
     return result;
 }
 
-}

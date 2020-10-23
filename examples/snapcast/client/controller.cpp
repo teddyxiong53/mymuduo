@@ -5,6 +5,8 @@
 #include <unistd.h>
 #include "common/message/time.h"
 #include "common/message/server_settings.h"
+#include <memory>
+#include "client/decoder/pcm_decoder.h"
 
 Controller::Controller(EventLoop* loop, const InetAddress& addr)
 : m_client(loop, addr),

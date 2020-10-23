@@ -162,7 +162,7 @@ void TcpConnection::send(Buffer* buf)
                 std::bind(
                     fp,
                     this,
-                    buf->retrieveAsString()
+                    buf->retrieveAllAsString()
                 )
             );
         }

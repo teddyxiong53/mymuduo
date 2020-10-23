@@ -15,7 +15,7 @@ public:
     uint16_t sampleSize;
     uint16_t frameSize;
 
-    std::string getFormat() const;
+    std::string getFormat() ;
 
     void setFormat(const std::string& format);
     void setFormat(uint32_t rate, uint16_t bits, uint16_t channels);

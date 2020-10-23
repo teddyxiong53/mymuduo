@@ -345,6 +345,10 @@ stream依赖DoubleBuffer。
 
 WireChunk消息直接继承BaseMessage。
 
+还是需要把exception还是要加进来。
+
+不用的话，都用return来改造太麻烦。
+
 
 
 
