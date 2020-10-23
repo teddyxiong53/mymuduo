@@ -95,7 +95,7 @@ void test_vector()
 }
 void test_chronos()
 {
-    chronos::clk
+    
 }
 int main(int argc, char const *argv[])
 {

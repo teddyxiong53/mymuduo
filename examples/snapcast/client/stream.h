@@ -23,7 +23,7 @@ public:
     void setRealSampleRate(double rate);
     void setBufferLen(size_t bufferLenMs);
     void resetBuffers();
-
+    void addChunk(msg::PcmChunk* chunk);
 private:
     SampleFormat m_format;
     chronos::usec m_sleep;

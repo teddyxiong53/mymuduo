@@ -47,7 +47,34 @@ public:
             chronos::usec((chronos::usec::rep)(1000000. * ((double)m_idx / (double)format.rate)))
         );
     }
-    
+    inline chronos::time_point_clk end()
+    {
+        return start() + durationLeft<chronos::usec>();
+    }
+    template <typename T>
+    inline T durationLeft()
+    {
+        return std::chrono::duration_cast<T>(
+            (chronos::nsec((chronos::nsec::rep)(1000000 * (getFrameCount() - m_idx) / format.msRate())))
+        );
+    }
+    inline size_t getFrameCount()
+    {
+        return (payloadSize/format.frameSize);
+    }
+    inline size_t getSampleCount()
+    {
+        return (payloadSize/format.sampleSize);
+    }
+    inline bool isEndOfChunk()
+    {
+        return m_idx >= getFrameCount();
+    }
+    template <typename T>
+    inline T duration() 
+    {
+        return std::chrono::duration_cast<T>(chronos::nsec((chronos::nsec::rep)(1000000 * getFrameCount() / format.msRate())));
+    }
 protected:
 private:
     uint32_t m_idx;

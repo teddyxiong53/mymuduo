@@ -106,3 +106,15 @@ bool Stream::getPlayerChunk(void *outputBuffer,
         return false;
     }
 }
+
+void Stream::addChunk(msg::PcmChunk* chunk)
+{
+    while(
+        m_chunks.size() * chunk->duration<chronos::msec>().count() > 10000
+    )
+    {
+        m_chunks.pop();
+    }
+    m_chunks.push(std::shared_ptr<msg::PcmChunk>(chunk));
+}
+

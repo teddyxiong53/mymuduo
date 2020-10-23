@@ -8,14 +8,18 @@
 #include <memory>
 #include "client/decoder/pcm_decoder.h"
 #include "common/snap_exception.h"
+#include "common/message/stream_tags.h"
+#include "client/player/alsa_player.h"
 
 Controller::Controller(EventLoop* loop, const InetAddress& addr)
 : m_client(loop, addr),
+  m_pcmDevice(),
   m_controllerThread(std::bind(&Controller::worker, this), "controller")
     //线程必须放在这里构造。放其他地方都报错的。
 {
     m_instance = 1;
     m_active = false;
+
     m_client.setConnectionCallback(
         std::bind(&Controller::onConnection, this, _1)
     );
@@ -111,16 +115,36 @@ void Controller::onMessage(const TcpConnectionPtr& conn,
         m_stream = std::make_shared<Stream>(m_sampleFormat);
         m_stream->setBufferLen(m_serverSettings->getBufferMs() - m_latency);
 
+        m_player = std::make_unique<AlsaPlayer>(m_pcmDevice, m_stream);
+        m_player->setVolume(m_serverSettings->getVolume()/100.0);
+        m_player->setMute(m_serverSettings->isMuted());
+        m_player->start();
     } else if(baseMessage.type == message_type::kServerSettings) {
         m_serverSettings.reset(new msg::ServerSettings());
         m_serverSettings->deserialize(baseMessage, &buffer[0]);
         mylogd("server settings:");
 
     } else if(baseMessage.type == message_type::kStreamTags) {
-
+        //这个是做什么呢？
+        //stream tag，是表示stream的一些信息，例如从哪里过来的。
+        m_streamTags.reset(new msg::StreamTags());
+        m_streamTags->deserialize(baseMessage, &buffer[0]);
     } else if(baseMessage.type == message_type::kWireChunk){
         //这个分支是最重要的。处理音频数据。
         //加入到stream里，
+        if(m_stream && m_decoder) {
+            auto *pcmChunk = new msg::PcmChunk(m_sampleFormat, 0);
+            pcmChunk->deserialize(baseMessage, &buffer[0]);
+            if(m_decoder->decode(pcmChunk)) {
+                m_stream->addChunk(pcmChunk);
+            } else {
+                delete pcmChunk;
+            }
+        }
+    }
+    //最后，如果不是时间消息，那么就同步一次时间。
+    if(baseMessage.type != message_type::kTime) {
+        sendTimeSyncMessage(1000);
     }
 }
 

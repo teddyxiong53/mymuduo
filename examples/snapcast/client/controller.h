@@ -11,6 +11,9 @@
 #include "client/stream.h"
 #include "client/player/player.h"
 #include "client/decoder/decoder.h"
+#include "common/message/stream_tags.h"
+#include "client/player/pcm_device.h"
+
 
 using muduo::net::TcpClient;
 using muduo::net::EventLoop;
@@ -49,4 +52,7 @@ private:
     std::shared_ptr<msg::CodecHeader> m_headerChunk;
     SampleFormat m_sampleFormat;
     int m_latency;
+    std::shared_ptr<msg::StreamTags> m_streamTags;
+    PcmDevice m_pcmDevice;
+
 };
