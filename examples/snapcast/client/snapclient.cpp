@@ -68,6 +68,7 @@ int main(int argc, char const *argv[])
 #else
 #include "common/message/message.h"
 #include "common/message/hello.h"
+#include "common/time_defs.h"
 
 void test_message()
 {
@@ -92,10 +93,14 @@ void test_vector()
     }
     printf("\n");
 }
+void test_chronos()
+{
+    chronos::clk
+}
 int main(int argc, char const *argv[])
 {
     // test_mesage();
-    test_vector();
+    // test_vector();
     return 0;
 }
 

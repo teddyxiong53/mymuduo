@@ -47,5 +47,6 @@ private:
     std::unique_ptr<decoder::Decoder> m_decoder;
     std::unique_ptr<Player> m_player;
     std::shared_ptr<msg::CodecHeader> m_headerChunk;
-
+    SampleFormat m_sampleFormat;
+    int m_latency;
 };

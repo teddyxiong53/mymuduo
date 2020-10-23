@@ -42,6 +42,12 @@ public:
         return sizeof(tv) + sizeof(uint32_t) + payloadSize;
     }
 
+    virtual chronos::time_point_clk start()
+    {
+        return chronos::time_point_clk(
+            chronos::sec(timestamp.sec) + chronos::usec(timestamp.usec)
+        );
+    }
 protected:
     void doserialize(std::ostream& stream) override
     {

@@ -1,3 +1,5 @@
+#pragma once
+
 #include "common/sample_format.h"
 #include "message.h"
 #include "wire_chunk.h"
@@ -35,6 +37,15 @@ public:
         }
         m_idx += result;
         return result;
+    }
+
+    chronos::time_point_clk start() override
+    {
+        return chronos::time_point_clk(
+            chronos::sec(timestamp.sec) + chronos::usec(timestamp.usec)
+            +
+            chronos::usec((chronos::usec::rep)(1000000. * ((double)m_idx / (double)format.rate)))
+        );
     }
     
 protected:

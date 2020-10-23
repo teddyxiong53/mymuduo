@@ -7,6 +7,7 @@
 #include "common/message/server_settings.h"
 #include <memory>
 #include "client/decoder/pcm_decoder.h"
+#include "common/snap_exception.h"
 
 Controller::Controller(EventLoop* loop, const InetAddress& addr)
 : m_client(loop, addr),
@@ -103,7 +104,13 @@ void Controller::onMessage(const TcpConnectionPtr& conn,
         m_player.reset(nullptr);
         if(m_headerChunk->codec == "pcm") {
             m_decoder = std::make_unique<decoder::PcmDecoder>();
+        } else {
+            throw SnapException("codec not support");
         }
+        m_sampleFormat = m_decoder->setHeader(m_headerChunk.get());
+        m_stream = std::make_shared<Stream>(m_sampleFormat);
+        m_stream->setBufferLen(m_serverSettings->getBufferMs() - m_latency);
+
     } else if(baseMessage.type == message_type::kServerSettings) {
         m_serverSettings.reset(new msg::ServerSettings());
         m_serverSettings->deserialize(baseMessage, &buffer[0]);
