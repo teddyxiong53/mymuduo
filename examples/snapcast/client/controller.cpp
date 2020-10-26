@@ -26,7 +26,7 @@ Controller::Controller(EventLoop* loop, const InetAddress& addr)
     m_client.setMessageCallback(
         std::bind(&Controller::onMessage, this, _1, _2, _3)
     );
-    m_client.enableRetry();
+    // m_client.enableRetry();
 }
 void Controller::connect()
 {
@@ -43,6 +43,7 @@ void Controller::sendMessage(msg::BaseMessage* message) {
     std::ostringstream oss;
     tv t;
     message->sent = t;
+    mylogd("type:%d", message->type);
     message->serialize(oss);
     if(m_connection) {
         m_connection->send(oss.str().data(), oss.tellp());
@@ -59,6 +60,7 @@ void Controller::onConnection(const TcpConnectionPtr & conn) {
         //把mac地址作为hostId
         m_hostId = ::getHostId(macAddress);
         msg::Hello hello(macAddress, m_hostId, m_instance);
+        mylogd("hello.type:%d", hello.type);
         sendMessage(&hello);
 
     } else {
@@ -97,6 +99,7 @@ void Controller::onMessage(const TcpConnectionPtr& conn,
         msg::Time reply;
         reply.deserialize(baseMessage, &buffer[0]);
         //计算时间差。
+
     } else if(baseMessage.type == message_type::kCodecHeader) {
         //这个消息，会触发一些类的创建。
         m_headerChunk.reset(new msg::CodecHeader());
@@ -125,11 +128,13 @@ void Controller::onMessage(const TcpConnectionPtr& conn,
         mylogd("server settings:");
 
     } else if(baseMessage.type == message_type::kStreamTags) {
+        mylogd("");
         //这个是做什么呢？
         //stream tag，是表示stream的一些信息，例如从哪里过来的。
         m_streamTags.reset(new msg::StreamTags());
         m_streamTags->deserialize(baseMessage, &buffer[0]);
     } else if(baseMessage.type == message_type::kWireChunk){
+        mylogd("");
         //这个分支是最重要的。处理音频数据。
         //加入到stream里，
         if(m_stream && m_decoder) {
@@ -144,6 +149,7 @@ void Controller::onMessage(const TcpConnectionPtr& conn,
     }
     //最后，如果不是时间消息，那么就同步一次时间。
     if(baseMessage.type != message_type::kTime) {
+        mylogd("");
         sendTimeSyncMessage(1000);
     }
 }
@@ -161,7 +167,14 @@ void Controller::stop()
 }
 void Controller::worker()
 {
+    static bool first = true;
     while(m_active) {
+        if(first) {
+            first = false;
+            //同步时间，每个100us，测试一次时间同步。
+            //这个先不做吧。
+            //因为我当前只在本机测试。时间是一样的。
+        }
         sleep(1);
         // mylogd("");
         //每5秒，发送一次时间同步消息。

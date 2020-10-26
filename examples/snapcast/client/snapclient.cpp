@@ -31,7 +31,7 @@ PcmDevice getPcmDevice(const std::string& soundCard)
     return empty;
 }
 
-#if 0
+#if 1
 int main(int argc, char const *argv[])
 {
     #ifdef USER_DAEMON
@@ -49,8 +49,9 @@ int main(int argc, char const *argv[])
     //获取alsa设备列表
     // PcmDevice pcmDevice = getPcmDevice("default");
     int instance = 1;
-    std::string host = "127.0.0.1";
-    int port = 2020;
+    std::string host = "172.16.2.196";
+    // std::string host = "127.0.0.1";
+    int port = 1704;
     int latency = 0;
     EventLoopThread loopThread;
     InetAddress serverAddr(host, port);
@@ -95,7 +96,7 @@ void test_vector()
 }
 void test_chronos()
 {
-    
+
 }
 int main(int argc, char const *argv[])
 {

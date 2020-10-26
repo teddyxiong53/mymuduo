@@ -75,8 +75,10 @@ public:
     EventLoop *ownerLoop() {
         return m_loop;
     }
-
+    void tie(const std::shared_ptr<void>& obj);
+    void remove();
 private:
+    void handleEventWithGuard(Timestamp receiveTime);
     void update();
     static const int kNoneEvent;
     static const int kReadEvent;
@@ -88,6 +90,10 @@ private:
     int m_revents;
     int m_index;
     bool m_eventHandling;
+
+    std::weak_ptr<void> m_tie;
+    bool m_tied;
+    bool m_addedToLoop;
 
     ReadEventCallback m_readCallback;
     EventCallback m_writeCallback;

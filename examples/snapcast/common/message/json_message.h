@@ -15,7 +15,7 @@ public:
     JsonMesasge(message_type type)
     : BaseMessage(type)
     {
-
+        // mylogd("type:%d", type);
     }
     ~JsonMesasge() override = default;
     void read(std::istream& stream) override

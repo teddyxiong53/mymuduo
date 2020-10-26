@@ -32,7 +32,15 @@ TcpServer::TcpServer(
 
 TcpServer::~TcpServer()
 {
-
+    m_loop->assertInLoopThread();
+    mylogd("tcp server destruct, name:%s", m_name.c_str());
+    for(auto &item : m_connections) {
+        TcpConnectionPtr conn(item.second);
+        item.second.reset();
+        conn->getLoop()->runInLoop(
+            std::bind(&TcpConnection::connectDestroyed, conn)
+        );
+    }
 }
 
 void TcpServer::setThreadNum(int numThreads)

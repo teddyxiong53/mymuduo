@@ -1,4 +1,4 @@
-.PHONY: all help clean chat lib
+.PHONY: all help clean chat lib 
 
 CXX=g++
 CPP=g++
@@ -41,6 +41,12 @@ SNAPSERVER_SRC := $(wildcard examples/snapcast/server/*.cpp)
 SNAPSERVER_OBJ := $(SNAPSERVER_SRC:.cpp=.o)
 SNAPSERVER_DEP := $(SNAPSERVER_OBJ:.o=.d)
 
+
+CURL_SRC = examples/curl/Curl.cpp examples/curl/download.cpp
+CURL_OBJ :=$(CURL_SRC:.cpp=.o)
+CURL_DEP :=$(CURL_OBJ:.o=.d)
+
+
 default: help
 
 libmuduo.a:$(MUDUO_OBJ)
@@ -59,7 +65,7 @@ CXXFLAGS += -g -O0 -std=c++11 -I./  -Wformat=0
 
 CXXFLAGS += -I./examples/snapcast
 
-LDFLAGS = -L./  -lmuduo -lpthread -lasound
+LDFLAGS = -L./  -lmuduo -lpthread -lasound -lcurl
 
 
 
@@ -82,6 +88,8 @@ snapclient: $(SNAPCAST_COMMON_OBJ) $(SNAPCLIENT_OBJ)
 	g++ -o $@ $^ $(LDFLAGS)
 
 snapserver: $(SNAPCAST_COMMON_OBJ) $(SNAPSERVER_OBJ)
+	g++ -o $@ $^ $(LDFLAGS)
+download: $(CURL_OBJ) libmuduo.a
 	g++ -o $@ $^ $(LDFLAGS)
 
 -include $(ALL_DEP)

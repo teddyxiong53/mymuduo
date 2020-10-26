@@ -105,7 +105,8 @@ struct BaseMessage
     }
     BaseMessage(message_type type)
     {
-        type = type;
+        // mylogd("type:%d", type);
+        this->type = type;
         id = 0;
         refersTo = 0;
     }
@@ -150,6 +151,7 @@ struct BaseMessage
     virtual void serialize(std::ostream& stream)
     {
         // mylogd("");
+        mylogd("type:%d", type);
         writeVal(stream, type);
         writeVal(stream, id);
         writeVal(stream, refersTo);

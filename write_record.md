@@ -351,5 +351,68 @@ WireChunk消息直接继承BaseMessage。
 
 
 
+有些消息，是需要发送马上等待回复的同步方式，这种muduo好像没有。
+
+只能靠上层自己依靠变量等方式来模拟同步方式了。
+
+snapcast里，也是靠一个condition_variable来做的。
+
+
+
+现在笔记本上运行snapserver。
+
+台式机上运行我自己写的snapclient。连接会失败。
+
+我把snapclient的retry关闭掉。
+
+不然会反复重连，导致打印打印，不利于分析。
+
+现在getsocketopt得到的错误码是32 。
+
+为什么会有这个错误？
+
+这个错误是broke pipe。
+
+是因为对端关闭了socket导致的。
+
+我用nc来监听1704端口。连接没有问题。
+
+那么应该就是snapserver发现我写的snapclient不合法，断开了对应的连接。
+
+snapserver这边日志：
+
+````
+2020-10-26 10-13-20.824 [Notice] (handleAccept) StreamServer::NewConnection: 172.16.2.83
+2020-10-26 10-13-20.832 [Debug] (operator()) getNextMessage: 23786, size: 176, id: 0, refers: 0
+2020-10-26 10-13-20.832 [Err] (operator()) unknown message type received: 23786, size: 176
+2020-10-26 10-13-20.832 [Info] (onDisconnect) onDisconnect: 
+````
+
+是收到了未知类型的消息。
+
+消息类型是23786。这个明显不对。
+
+消息类型都是基本枚举，数字很小的。
+
+那应该就是我的消息序列化有问题。
+
+怎么判断是否正确呢？
+
+在序列化之前就不对。发送和接收解析是对得上的。
+
+知道原因了。相当于type没有被初始化。
+
+```
+    BaseMessage(message_type type)
+    {
+        mylogd("type:%d", type);
+        this->type = type;//我开始这里是写的type = type，相当于空操作。type没有被赋值。
+        id = 0;
+        refersTo = 0;
+    }
+```
+
+现在消息可以发送到服务端这边了。但是估计消息有问题，直接把snapserver这边弄挂了。
+
 
 

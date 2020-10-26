@@ -10,13 +10,14 @@ class Hello: public JsonMesasge
 public:
     Hello(): JsonMesasge(message_type::kHello)
     {
-
+        // mylogd("");
     }
     Hello(const std::string& macAddres,
         const std::string& id,
         size_t instance
     ) : JsonMesasge(message_type::kHello)
     {
+        // mylogd("type:%d", type);
         msg["MAC"] = macAddres;
         msg["HostName"] = ::getHostName();
         msg["Version"] = "1.0";
@@ -25,7 +26,7 @@ public:
         msg["Instance"] = instance;
         msg["ID"] = id;
         msg["SnapStreamProtocolVersion"] = 2;
-        // mylogd("%s", msg.dump().c_str());
+        mylogd("%s", msg.dump().c_str());
     }
     ~Hello() override = default;
 

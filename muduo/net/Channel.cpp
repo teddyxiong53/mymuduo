@@ -19,7 +19,9 @@ Channel::Channel(EventLoop *loop, int fd)
    m_events(0),
    m_revents(0),
    m_index(-1),
-   m_eventHandling(false)
+   m_eventHandling(false),
+   m_tied(false),
+   m_addedToLoop(false)
 {
 
 }
@@ -28,8 +30,20 @@ Channel::~Channel()
     assert(!m_eventHandling);
 }
 
+void Channel::handleEvent(Timestamp receivedTime)
+{
+    std::shared_ptr<void> guard;
+    if(m_tied) {
+        guard = m_tie.lock();
+        if(guard) {
+            handleEventWithGuard(receivedTime);
+        }
+    } else {
+        handleEventWithGuard(receivedTime);
+    }
+}
 
-void Channel::handleEvent(Timestamp receiveTime)
+void Channel::handleEventWithGuard(Timestamp receiveTime)
 {
     m_eventHandling = true;
     if(m_revents & POLLNVAL) {
@@ -55,9 +69,20 @@ void Channel::handleEvent(Timestamp receiveTime)
 
 void Channel::update()
 {
+    m_addedToLoop = true;
     m_loop->updateChannel(this);
 }
 
+void Channel::remove()
+{
+    m_addedToLoop = false;
+    m_loop->removeChannel(this);
+}
+void Channel::tie(const std::shared_ptr<void>& obj)
+{
+    m_tie = obj;
+    m_tied = true;
+}
 
 } // namespace net
 
